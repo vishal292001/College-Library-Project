@@ -42,14 +42,14 @@ class Student_Details():
         self.update_student_button_image = Image.open("./images/update_student_button_img.png")
         self.update_student_button_image = self.update_student_button_image.resize((140, 60))
         self.update_student_button_image = ImageTk.PhotoImage(self.update_student_button_image)
-        self.update_student_button = ttk.Button(self.root, text="update student",image=self.update_student_button_image,command=self.update_student_details)
+        self.update_student_button = ttk.Button(self.root, text="update student",image=self.update_student_button_image,command=self.update_student_details_window)
         self.update_student_button.place(x=260,y=50)
 
 
         self.delete_student_button_image = Image.open("./images/delete_student_button_img.png")
         self.delete_student_button_image = self.delete_student_button_image.resize((140, 60))
         self.delete_student_button_image = ImageTk.PhotoImage(self.delete_student_button_image)
-        self.delete_student_button = ttk.Button(self.root, text="delete student",image=self.delete_student_button_image)
+        self.delete_student_button = ttk.Button(self.root, text="delete student",image=self.delete_student_button_image,command=self.delete_student_window)
         self.delete_student_button.place(x=420,y=50)
 
         
@@ -67,8 +67,8 @@ class Student_Details():
         pass
 
     def add_new_student_frame(self):
-
-        self.student_details_frame = Frame(self.root,bg="white",borderwidth=6,width=600,height=400)
+        self.check_and_destroy_frame(self.root)
+        self.student_details_frame = Frame(self.root,bg="white",borderwidth=6,width=600,height=400,name='add_student_frame')
         self.student_details_frame.place(x=40,y=140)
 
         self.student_details_bg_image = tk.PhotoImage(file='./images/student_details_bg_img.png')
@@ -99,8 +99,15 @@ class Student_Details():
         self.cancel_button.place(x=260,y=300)
 
 
-    def update_student_details(self):
+    def check_and_destroy_frame(self,root):
+        for child in root.winfo_children():
+            if isinstance(child, tk.Frame):
+                if child.winfo_name() in ['add_student_frame','update_student_frame']:
+                    child.destroy()
 
+
+    def update_student_details_window(self):
+        self.check_and_destroy_frame(self.root)
         self.update_student_details_frame = Frame(self.root,bg="white",borderwidth=6,width=600,height=400)
         self.update_student_details_frame.place(x=40,y=140)
 
@@ -109,9 +116,49 @@ class Student_Details():
         self.update_student_details_bg_image_label.place(x=0,y=0)
 
 
+        self.enter_student_id_img = tk.PhotoImage(file='./images/enter_student_id_img.png')
+        self.enter_student_id_img_label = tk.Label(self.update_student_details_frame, bd=0,image=self.enter_student_id_img)
+        self.enter_student_id_img_label.place(x=40,y=65)
+
+        self.enter_studen_id_text_box = tk.Text(self.update_student_details_frame,height = 1,width = 25, highlightthickness=1,highlightbackground="black")
+        self.enter_studen_id_text_box.place(x=210,y=75)
+
+
+        self.search_student_img = Image.open("./images/search_img.png")
+        self.search_student_img = self.search_student_img.resize((70, 40))
+        self.search_student_img = ImageTk.PhotoImage(self.search_student_img)
+        self.search_student_button = ttk.Button(self.update_student_details_frame,text="search student",image=self.search_student_img,command=lambda:self.search_student_in_database('update'))
+        self.search_student_button.place(x=440,y=60)
+
+
 
 
         pass
+
+    def delete_student_window(self):
+        self.check_and_destroy_frame(self.root)
+        self.delete_student_frame = Frame(self.root,bg="white",borderwidth=6,width=600,height=400)
+        self.delete_student_frame.place(x=40,y=140)
+
+        self.delete_student_bg_image = tk.PhotoImage(file='./images/student_details_bg_img.png')
+        self.delete_student_bg_image_label = tk.Label(self.delete_student_frame, bd=0,image=self.delete_student_bg_image)
+        self.delete_student_bg_image_label.place(x=0,y=0)
+
+
+        self.enter_student_id_img = tk.PhotoImage(file='./images/enter_student_id_img.png')
+        self.enter_student_id_img_label = tk.Label(self.delete_student_frame, bd=0,image=self.enter_student_id_img)
+        self.enter_student_id_img_label.place(x=40,y=65)
+
+        self.enter_studen_id_text_box = tk.Text(self.delete_student_frame,height = 1,width = 25, highlightthickness=1,highlightbackground="black")
+        self.enter_studen_id_text_box.place(x=210,y=75)
+
+
+        self.search_student_img_in_delete_win = Image.open("./images/search_img.png")
+        self.search_student_img_in_delete_win = self.search_student_img_in_delete_win.resize((70, 40))
+        self.search_student_img_in_delete_win = ImageTk.PhotoImage(self.search_student_img_in_delete_win)
+        self.search_student_button_in_delete_win = ttk.Button(self.delete_student_frame,text="search student",image=self.search_student_img_in_delete_win,command=lambda:self.search_student_in_database('delete'))
+        self.search_student_button_in_delete_win.place(x=440,y=60)
+
 
 
 
@@ -152,7 +199,7 @@ class Student_Details():
         self.load_to_database_details_frame.place(x=678,y=175)
 
         self.select_database_tool_var = tk.StringVar()
-        self.select_database_dropdown = ttk.Combobox(self.load_to_database_details_frame, width = 26,values=['SQL SERVER','ORACLE','POSTGRES','MONGODB'], textvariable=self.select_database_tool_var)
+        self.select_database_dropdown = ttk.Combobox(self.load_to_database_details_frame, width = 26,values=['POSTGRES','MONGODB'], textvariable=self.select_database_tool_var)
         self.select_database_dropdown.place(x=40,y=10)
         self.select_database_tool_var.trace("w",self.check_database)
 
@@ -173,44 +220,20 @@ class Student_Details():
 
     def check_database(self,*args):
         self.detect_child_frames(self.load_to_database_details_frame)
-        if self.select_database_dropdown.get()=="SQL SERVER":
-            self.sql_server_database_details_frame = Frame(self.load_to_database_details_frame,bg="white",borderwidth=6,width=240,height=140,name='sql_server_database_details_frame')
-            self.sql_server_database_details_frame.place(x=10,y=40)
 
-            self.label_sql_server_database_details_frame_server_name = Label(self.sql_server_database_details_frame,text = "Server",font=("Arial", 11),bg='white')
-            self.label_sql_server_database_details_frame_server_name.place(x=10,y=10)
-
-            self.text_box_sql_server_server_name = tk.Text(self.sql_server_database_details_frame,bd=0, highlightthickness=1,height = 1,width = 16)
-            self.text_box_sql_server_server_name.place(x=90,y=10)
-
-            self.label_sql_server_database_details_frame_database_name = Label(self.sql_server_database_details_frame,text = "Database",font=("Arial", 11),bg='white')
-            self.label_sql_server_database_details_frame_database_name.place(x=10,y=40)
-            self.text_box_sql_server_database_name = tk.Text(self.sql_server_database_details_frame,bd=0, highlightthickness=1,height = 1,width = 16)
-            self.text_box_sql_server_database_name.place(x=90,y=40)
-
-            self.label_sql_server_database_details_frame_username = Label(self.sql_server_database_details_frame,text = "user name",font=("Arial", 11),bg='white')
-            self.label_sql_server_database_details_frame_username.place(x=10,y=70)
-            self.text_box_sql_server_username = tk.Text(self.sql_server_database_details_frame,bd=0, highlightthickness=1,height = 1,width = 16)
-            self.text_box_sql_server_username.place(x=90,y=70)
-
-            self.label_sql_server_database_details_frame_password = Label(self.sql_server_database_details_frame,text = "password",font=("Arial", 11),bg='white')
-            self.label_sql_server_database_details_frame_password.place(x=10,y=100)
-            self.text_box_sql_server_password = tk.Text(self.sql_server_database_details_frame,bd=0, highlightthickness=1,height = 1,width = 16)
-            self.text_box_sql_server_password.place(x=90,y=100)
-
-        elif self.select_database_dropdown.get()=="POSTGRES":
+        if self.select_database_dropdown.get()=="POSTGRES":
             self.postgres_database_details_frame = Frame(self.load_to_database_details_frame,bg="white",borderwidth=6,width=240,height=160)
             self.postgres_database_details_frame.place(x=10,y=40)
 
-            self.label_postgres_database_details_frame_hostname_name = Label(self.postgres_database_details_frame,text = "hostname",font=("Arial", 11),bg='white')
-            self.label_postgres_database_details_frame_hostname_name.place(x=10,y=10)
-            self.text_box_postgres_hostname = tk.Text(self.postgres_database_details_frame,bd=0, highlightthickness=1,height = 1,width = 16)
-            self.text_box_postgres_hostname.place(x=90,y=10)
+            # self.label_postgres_database_details_frame_hostname_name = Label(self.postgres_database_details_frame,text = "hostname",font=("Arial", 11),bg='white')
+            # self.label_postgres_database_details_frame_hostname_name.place(x=10,y=10)
+            # self.text_box_postgres_hostname = tk.Text(self.postgres_database_details_frame,bd=0, highlightthickness=1,height = 1,width = 16)
+            # self.text_box_postgres_hostname.place(x=90,y=10)
 
-            self.label_postgres_database_details_frame_database_name = Label(self.postgres_database_details_frame,text = "Database",font=("Arial", 11),bg='white')
-            self.label_postgres_database_details_frame_database_name.place(x=10,y=40)
-            self.text_box_postgres_database_name = tk.Text(self.postgres_database_details_frame,bd=0, highlightthickness=1,height = 1,width = 16)
-            self.text_box_postgres_database_name.place(x=90,y=40)
+            # self.label_postgres_database_details_frame_database_name = Label(self.postgres_database_details_frame,text = "Database",font=("Arial", 11),bg='white')
+            # self.label_postgres_database_details_frame_database_name.place(x=10,y=40)
+            # self.text_box_postgres_database_name = tk.Text(self.postgres_database_details_frame,bd=0, highlightthickness=1,height = 1,width = 16)
+            # self.text_box_postgres_database_name.place(x=90,y=40)
 
             self.label_postgres_database_details_frame_username = Label(self.postgres_database_details_frame,text = "user name",font=("Arial", 11),bg='white')
             self.label_postgres_database_details_frame_username.place(x=10,y=70)
@@ -222,40 +245,6 @@ class Student_Details():
             self.text_box_postgres_password = tk.Text(self.postgres_database_details_frame,bd=0, highlightthickness=1,height = 1,width = 16)
             self.text_box_postgres_password.place(x=90,y=100)
 
-            # self.label_postgres_database_details_frame_port = Label(self.postgres_database_details_frame,text = "port",font=("Arial", 11),bg='white')
-            # self.label_postgres_database_details_frame_port.place(x=10,y=130)
-            # self.text_box_postgres_port = tk.Text(self.postgres_database_details_frame,bd=0, highlightthickness=1,height = 1,width = 16)
-            # self.text_box_postgres_port.place(x=90,y=130)
-
-
-        elif self.select_database_dropdown.get()=="ORACLE":
-            self.oracle_database_details_frame = Frame(self.load_to_database_details_frame,bg="white",borderwidth=6,width=240,height=160)
-            self.oracle_database_details_frame.place(x=10,y=40)
-
-            self.label_oracle_database_details_frame_hostname_name = Label(self.oracle_database_details_frame,text = "hostname",font=("Arial", 11),bg='white')
-            self.label_oracle_database_details_frame_hostname_name.place(x=10,y=10)
-            self.text_box_oracle_hostname = tk.Text(self.oracle_database_details_frame,bd=0, highlightthickness=1,height = 1,width = 16)
-            self.text_box_oracle_hostname.place(x=90,y=10)
-
-            self.label_oracle_database_details_frame_username = Label(self.oracle_database_details_frame,text = "user name",font=("Arial", 11),bg='white')
-            self.label_oracle_database_details_frame_username.place(x=10,y=40)
-            self.text_box_oracle_username = tk.Text(self.oracle_database_details_frame,bd=0, highlightthickness=1,height = 1,width = 16)
-            self.text_box_oracle_username.place(x=90,y=40)
-
-            self.label_oracle_database_details_frame_password = Label(self.oracle_database_details_frame,text = "password",font=("Arial", 11),bg='white')
-            self.label_oracle_database_details_frame_password.place(x=10,y=70)
-            self.text_box_oracle_password = tk.Text(self.oracle_database_details_frame,bd=0, highlightthickness=1,height = 1,width = 16)
-            self.text_box_oracle_password.place(x=90,y=70)
-
-            self.label_oracle_database_details_frame_port = Label(self.oracle_database_details_frame,text = "port",font=("Arial", 11),bg='white')
-            self.label_oracle_database_details_frame_port.place(x=10,y=100)
-            self.text_box_oracle_port = tk.Text(self.oracle_database_details_frame,bd=0, highlightthickness=1,height = 1,width = 16)
-            self.text_box_oracle_port.place(x=90,y=100)
-
-            self.label_oracle_database_details_frame_sid = Label(self.oracle_database_details_frame,text = "sid",font=("Arial", 11),bg='white')
-            self.label_oracle_database_details_frame_sid.place(x=10,y=130)
-            self.text_box_oracle_sid = tk.Text(self.oracle_database_details_frame,bd=0, highlightthickness=1,height = 1,width = 16)
-            self.text_box_oracle_sid.place(x=90,y=130)
 
 
 
@@ -281,22 +270,13 @@ class Student_Details():
 
     def authenticate_user(self):
         self.database_tool_name = self.select_database_dropdown.get()
-        if self.database_tool_name=="SQL SERVER":
-            self.sql_server_server_name = self.text_box_sql_server_server_name.get(1.0, "end-1c")
-            self.sql_server_database_name = self.text_box_sql_server_database_name.get(1.0, "end-1c")
-            self.sql_server_username = self.text_box_sql_server_username.get(1.0, "end-1c")
-            self.sql_server_password = self.text_box_sql_server_password.get(1.0, "end-1c")
-            self.load_to_db.connect_to_sql_server(self.sql_server_server_name,self.sql_server_database_name,self.sql_server_username,self.sql_server_password)
-
-        elif self.database_tool_name=="POSTGRES":
-            self.postgres_hostname = self.text_box_postgres_hostname.get(1.0, "end-1c")
-            self.postgres_database_name = self.text_box_postgres_database_name.get(1.0, "end-1c")
+        
+        if self.database_tool_name=="POSTGRES":
+        # self.postgres_hostname = self.text_box_postgres_hostname.get(1.0, "end-1c")
+        # self.postgres_database_name = self.text_box_postgres_database_name.get(1.0, "end-1c")
             self.postgres_username = self.text_box_postgres_username.get(1.0, "end-1c")
             self.postgres_password = self.text_box_postgres_password.get(1.0, "end-1c")
-            self.postgres_port = self.text_box_postgres_port.get(1.0, "end-1c")
-            self.load_to_db.connect_to_postgres(self.postgres_hostname,self.postgres_database_name,self.postgres_username,self.postgres_password)
-
-
+            self.load_to_db.connect_to_postgres('localhost','Library',self.postgres_username,self.postgres_password)
 
 
         print(self.load_to_db.flag)
@@ -312,9 +292,84 @@ class Student_Details():
 
 
 
+    def search_student_in_database(self,operation):
+
+        if self.load_to_db.flag==False:
+            messagebox.showinfo('information', 'User Authentication is Pending')
+            return 0
+        self.student_id = int(self.enter_studen_id_text_box.get(1.0, "end-1c"))
+        self.df = self.load_to_db.search_in_database()
+        print(self.df)
+        self.student_id_list = list(self.df['student_id'])
+
+        if operation=='update':
+            self.frame = self.update_student_details_frame
+        if operation=='delete':
+            self.frame=self.delete_student_frame
+        self.student_details_image_opration = tk.PhotoImage(file='./images/update_student_img.png')
+        self.student_details_image_opration_label = tk.Label(self.frame, bd=0,image=self.student_details_image_opration)
+        self.student_details_image_opration_label.place(x=40,y=140)
+
+        self.student_name_text_box = tk.Text(self.frame,height = 1,width = 25, highlightthickness=1,highlightbackground="black")
+        self.student_name_text_box.place(x=210,y=150)
+
+        self.student_email_text_box = tk.Text(self.frame,height = 1,width = 25, highlightthickness=1,highlightbackground="black")
+        self.student_email_text_box.place(x=210,y=200)
+
+        self.student_phone_text_box = tk.Text(self.frame,height = 1,width = 25, highlightthickness=1,highlightbackground="black")
+        self.student_phone_text_box.place(x=210,y=250)
+
+
+        if self.student_id in self.student_id_list:
+            self.row_index = self.student_id_list.index(self.student_id)
+            self.row = self.df.loc[self.row_index]
+
+            self.student_name_text_box.insert(tk.END,self.row['student_name'])
+            self.student_email_text_box.insert(tk.END,self.row['student_email'])
+            self.student_phone_text_box.insert(tk.END,self.row['student_phone'])
+
+            if operation=='update':
+                self.student_to_db_button = ttk.Button(self.frame, text="Update",command=self.update_student_details)
+                self.student_to_db_button.place(x=190,y=300)
+
+                self.cancel_update_button = ttk.Button(self.frame, text="Cancel",command=self.close_update_student_details_window)
+                self.cancel_update_button.place(x=280,y=300)
+            if operation=='delete':
+                self.student_to_db_button = ttk.Button(self.frame, text="Delete",command=self.delete_student)
+                self.student_to_db_button.place(x=190,y=300)
+
+                self.cancel_update_button = ttk.Button(self.frame, text="Cancel",command=self.close_delete_student_details_window)
+                self.cancel_update_button.place(x=280,y=300)
+
+
+        else:
+             messagebox.showinfo('information', 'Student not found')
+             print("student is not found")
+
+
+
+
+
+
+    def update_student_details(self):
+
+        self.student_name = self.student_name_text_box.get("1.0", "end-1c")
+        self.student_email = self.student_email_text_box.get("1.0", "end-1c")
+        self.student_phone = self.student_phone_text_box.get("1.0", "end-1c")
+        self.load_to_db.update_data_in_database(self.student_id,self.student_name,self.student_email,self.student_phone)
+
+    def delete_student(self):
+        self.load_to_db.delete_record_in_database(self.student_id)
+
+
     def cancel(self):
         self.student_details_frame.destroy()
 
+    def close_update_student_details_window(self):
+        self.update_student_details_frame.destroy()
+
+    def close_delete_student_details_window(self):
+        self.delete_student_frame.destroy()
     
 
 app_instance = Student_Details()
