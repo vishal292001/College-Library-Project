@@ -23,10 +23,11 @@ class Book_lending_app():
     def __init__(self):
         self.root = Tk()
         self.root.title("Book Lending App")
-        self.root.geometry('1050x700')
+        self.root.geometry('1150x700')
         self.root.configure(bg='white')
         self.add_baground_images()
         self.add_buttons()
+        self.add_user_inputs()
 
         self.diaplay_book_name_label_y_pos = 120
         self.selected_book_list = []
@@ -76,6 +77,12 @@ class Book_lending_app():
         self.enter_book_code_image_lend_win = self.enter_book_code_image_lend_win.resize((120, 50))
         self.enter_book_code_image_lend_win = ImageTk.PhotoImage(self.enter_book_code_image_lend_win)
 
+        self.load_to_databse_details_bg_img = tk.PhotoImage(file='./images/load_database_details_bg_img.png')
+        self.load_to_databse_details_bg_label = tk.Label(self.root, bd=0,image=self.load_to_databse_details_bg_img)
+        self.load_to_databse_details_bg_label.place(x=820,y=400)
+
+
+
         pass
 
     def add_buttons(self):
@@ -124,6 +131,45 @@ class Book_lending_app():
         self.delete_student_book_button_image = ImageTk.PhotoImage(self.delete_student_book_button_image)
         self.delete_student_book_button = Button(self.root,image=self.delete_student_book_button_image,borderwidth=0,background='white')
         self.delete_student_book_button.place(x=32,y=570)
+
+        self.authenticate_button_image = Image.open("./images/authenticate_user.png")
+        self.authenticate_button_image = self.authenticate_button_image.resize((200, 50))
+        self.authenticate_button_image = ImageTk.PhotoImage(self.authenticate_button_image)
+        self.authenticate_button = Button(self.root, text="Aithenticate",image=self.authenticate_button_image,borderwidth=0,background='white')
+        self.authenticate_button.place(x=880,y=348)
+
+    def add_user_inputs(self):
+        self.select_database_tool_var = tk.StringVar()
+        self.select_database_dropdown = ttk.Combobox(self.root, width = 26,values=['POSTGRES','MONGODB'], textvariable=self.select_database_tool_var)
+        self.select_database_dropdown.place(x=880,y=440)
+        # self.select_database_tool_var.trace("w",self.check_database)
+
+        self.label_postgres_database_details_frame_username = Label(self.root,text = "user name",font=("Arial Bold", 11),bg='white',fg='#2e75b6')
+        self.label_postgres_database_details_frame_username.place(x=860,y=490)
+        self.text_box_postgres_username = tk.Text(self.root,bd=0, highlightthickness=1,height = 1,width = 16)
+        self.text_box_postgres_username.place(x=940,y=490)
+
+        self.label_postgres_database_details_frame_password = Label(self.root,text = "password",font=("Arial Bold", 11),bg='white',fg='#2e75b6')
+        self.label_postgres_database_details_frame_password.place(x=860,y=520)
+        self.text_box_postgres_password = tk.Entry(self.root,bd=0, highlightthickness=1,width = 21,show="*")
+        self.text_box_postgres_password.place(x=940,y=520)
+
+        self.authenticate_credentials_button = ttk.Button(self.root, text="Authenticate")
+        self.authenticate_credentials_button.place(x=900,y=580)
+
+        self.cancel_authentication_button = ttk.Button(self.root, text="Cancel")
+        self.cancel_authentication_button.place(x=985,y=580)
+
+
+    def authenticate_user(self):
+        self.database_tool_name = self.select_database_dropdown.get()
+        
+        if self.database_tool_name=="POSTGRES":
+            self.postgres_username = self.text_box_postgres_username.get(1.0, "end-1c")
+            self.postgres_password = self.text_box_postgres_password.get()
+            self.load_to_db.connect_to_postgres('localhost','Library',self.postgres_username,self.postgres_password)
+
+
 
     def add_new_student_window(self):
         self.check_and_destroy_frame(self.root)
