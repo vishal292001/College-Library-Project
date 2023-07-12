@@ -6,10 +6,8 @@ from PIL import ImageTk
 from tkinter import messagebox
 
 
-from sqlalchemy import create_engine,text
 import urllib
 import pandas as pd
-import sqlalchemy
 import json
 import pyodbc
 import database_loaders
@@ -179,7 +177,16 @@ class Student_Details():
                 messagebox.showinfo('information', 'User Authentication is Pending')
                 return 0
         
-        self.load_to_db.load_to_postgres(tuple(self.student_details_list))
+        self.df = self.load_to_db.search_in_database()
+        self.student_id_list = list(self.df['student_id'])
+        self.student_id = int(self.studen_id_text_box.get("1.0", "end-1c"))
+        if self.student_id in self.student_id_list:
+            messagebox.showinfo('information', 'student with this id already exist in database')
+            return 0
+        else:
+            self.load_to_db.load_to_postgres(tuple(self.student_details_list))
+            messagebox.showinfo('information', 'student is successfully added to database')
+
 
             
 
@@ -203,11 +210,11 @@ class Student_Details():
         self.select_database_dropdown.place(x=40,y=10)
         self.select_database_tool_var.trace("w",self.check_database)
 
-        self.authenticate_credentials_button = ttk.Button(self.root, text="Authenticate", command=self.authenticate_user)
-        self.authenticate_credentials_button.place(x=740,y=420)
+        self.authenticate_credentials_button = ttk.Button(self.load_to_database_details_frame, text="Authenticate", command=self.authenticate_user)
+        self.authenticate_credentials_button.place(x=50,y=170)
 
-        self.cancel_authentication_button = ttk.Button(self.root, text="Cancel", command=self.cancel)
-        self.cancel_authentication_button.place(x=840,y=420)
+        self.cancel_authentication_button = ttk.Button(self.load_to_database_details_frame, text="Cancel", command=self.cancel_authentication)
+        self.cancel_authentication_button.place(x=140,y=170)
             
 
 
@@ -222,34 +229,24 @@ class Student_Details():
         self.detect_child_frames(self.load_to_database_details_frame)
 
         if self.select_database_dropdown.get()=="POSTGRES":
-            self.postgres_database_details_frame = Frame(self.load_to_database_details_frame,bg="white",borderwidth=6,width=240,height=160)
+            self.postgres_database_details_frame = Frame(self.load_to_database_details_frame,bg="white",borderwidth=6,width=240,height=120)
             self.postgres_database_details_frame.place(x=10,y=40)
 
-            # self.label_postgres_database_details_frame_hostname_name = Label(self.postgres_database_details_frame,text = "hostname",font=("Arial", 11),bg='white')
-            # self.label_postgres_database_details_frame_hostname_name.place(x=10,y=10)
-            # self.text_box_postgres_hostname = tk.Text(self.postgres_database_details_frame,bd=0, highlightthickness=1,height = 1,width = 16)
-            # self.text_box_postgres_hostname.place(x=90,y=10)
-
-            # self.label_postgres_database_details_frame_database_name = Label(self.postgres_database_details_frame,text = "Database",font=("Arial", 11),bg='white')
-            # self.label_postgres_database_details_frame_database_name.place(x=10,y=40)
-            # self.text_box_postgres_database_name = tk.Text(self.postgres_database_details_frame,bd=0, highlightthickness=1,height = 1,width = 16)
-            # self.text_box_postgres_database_name.place(x=90,y=40)
-
             self.label_postgres_database_details_frame_username = Label(self.postgres_database_details_frame,text = "user name",font=("Arial", 11),bg='white')
-            self.label_postgres_database_details_frame_username.place(x=10,y=70)
+            self.label_postgres_database_details_frame_username.place(x=10,y=20)
             self.text_box_postgres_username = tk.Text(self.postgres_database_details_frame,bd=0, highlightthickness=1,height = 1,width = 16)
-            self.text_box_postgres_username.place(x=90,y=70)
+            self.text_box_postgres_username.place(x=90,y=20)
 
             self.label_postgres_database_details_frame_password = Label(self.postgres_database_details_frame,text = "password",font=("Arial", 11),bg='white')
-            self.label_postgres_database_details_frame_password.place(x=10,y=100)
-            self.text_box_postgres_password = tk.Text(self.postgres_database_details_frame,bd=0, highlightthickness=1,height = 1,width = 16)
-            self.text_box_postgres_password.place(x=90,y=100)
+            self.label_postgres_database_details_frame_password.place(x=10,y=50)
+            self.text_box_postgres_password = tk.Entry(self.postgres_database_details_frame,bd=0, highlightthickness=1,width = 21,show="*")
+            self.text_box_postgres_password.place(x=90,y=50)
 
 
 
 
         elif self.select_database_dropdown.get()=="MONGODB":
-            self.mongo_database_details_frame = Frame(self.load_to_database_details_frame,bg="white",borderwidth=6,width=250,height=160)
+            self.mongo_database_details_frame = Frame(self.load_to_database_details_frame,bg="white",borderwidth=6,width=250,height=120)
             self.mongo_database_details_frame.place(x=10,y=40)
 
             self.label_mongo_database_details_frame_conn_string = Label(self.mongo_database_details_frame,text = "connection string",font=("Arial", 10),bg='white')
@@ -272,10 +269,8 @@ class Student_Details():
         self.database_tool_name = self.select_database_dropdown.get()
         
         if self.database_tool_name=="POSTGRES":
-        # self.postgres_hostname = self.text_box_postgres_hostname.get(1.0, "end-1c")
-        # self.postgres_database_name = self.text_box_postgres_database_name.get(1.0, "end-1c")
             self.postgres_username = self.text_box_postgres_username.get(1.0, "end-1c")
-            self.postgres_password = self.text_box_postgres_password.get(1.0, "end-1c")
+            self.postgres_password = self.text_box_postgres_password.get()
             self.load_to_db.connect_to_postgres('localhost','Library',self.postgres_username,self.postgres_password)
 
 
@@ -283,11 +278,11 @@ class Student_Details():
         if self.load_to_db.flag:
             self.authentication_success_image = tk.PhotoImage(file='./images/Auth_success.png')
             self.authentication_success_image_label = tk.Label(self.root, bd=0,image=self.authentication_success_image)
-            self.authentication_success_image_label.place(x=660,y=460)
+            self.authentication_success_image_label.place(x=660,y=440)
         else:
             self.authentication_failed_image = tk.PhotoImage(file='./images/Auth_failed.png')
             self.authentication_failed_image_label = tk.Label(self.root, bd=0,image=self.authentication_failed_image)
-            self.authentication_failed_image_label.place(x=660,y=460)
+            self.authentication_failed_image_label.place(x=660,y=440)
 
 
 
@@ -357,9 +352,12 @@ class Student_Details():
         self.student_email = self.student_email_text_box.get("1.0", "end-1c")
         self.student_phone = self.student_phone_text_box.get("1.0", "end-1c")
         self.load_to_db.update_data_in_database(self.student_id,self.student_name,self.student_email,self.student_phone)
+        messagebox.showinfo('information', 'Student data is updated successfully!')
 
     def delete_student(self):
         self.load_to_db.delete_record_in_database(self.student_id)
+        messagebox.showinfo('information', 'Student data is deleted successfully!')
+
 
 
     def cancel(self):
@@ -370,6 +368,9 @@ class Student_Details():
 
     def close_delete_student_details_window(self):
         self.delete_student_frame.destroy()
+    
+    def cancel_authentication(self):
+        self.load_to_database_details_frame.destroy()
     
 
 app_instance = Student_Details()

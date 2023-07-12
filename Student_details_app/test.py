@@ -1,31 +1,29 @@
-    
-from sqlalchemy import create_engine,text
-import urllib
-import pandas as pd
-import sqlalchemy
-import json
-import pyodbc
+# Import Required Library
+from tkinter import *
+from tkcalendar import Calendar
 
+# Create Object
+root = Tk()
 
+# Set geometry
+root.geometry("400x400")
 
-def load_to_database_sql_server(server_name, database_name, username, password):
-        driver = "SQL Server Native Client 11.0"
-        connection_string = f"DRIVER={driver};SERVER={server_name};DATABASE={database_name};UID={username};PWD={password}"
-        conn = pyodbc.connect(connection_string)
-        cursor = conn.cursor()
-        print(cursor)
+# Add Calendar
+cal = Calendar(root, selectmode = 'day',
+			year = 2020, month = 5,
+			day = 22)
 
-        sql = "INSERT INTO Studen_Details (StudenID, STUDENT_NAME, STUDENT_EMAIL,STUDENT_PHONE) VALUES (?, ?, ?, ?)"
-        data = ('1001', 'Vishal', 'vishal@gmail','7083264478')
-        cursor.execute(sql, data)
-        conn.commit()
+cal.pack(pady = 20)
 
-        # StudenID INT PRIMARY KEY,
-        # STUDENT_NAME VARCHAR(50),
-        # STUDENT_EMAIL VARCHAR(50),
-        # STUDENT_PHONE VARCHAR(50)
+def grad_date():
+	date.config(text = "Selected Date is: " + cal.get_date())
 
+# Add Button and Label
+Button(root, text = "Get Date",
+	command = grad_date).pack(pady = 20)
 
+date = Label(root, text = "")
+date.pack(pady = 20)
 
-
-load_to_database_sql_server('GCS72-PC','Student','sa','Abcd1234@')
+# Execute Tkinter
+root.mainloop()
