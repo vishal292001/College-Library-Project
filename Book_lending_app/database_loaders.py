@@ -1,6 +1,7 @@
 
 import psycopg2
 import pandas as pd
+import psycopg2.extras as extras
 
 
 
@@ -106,6 +107,14 @@ class Load_to_Database():
             self.flag=False
             print("Error while deleting data:", error)
 
+
+    def load_book_lending_details(self,data):
+        tuples = [tuple(x) for x in data.to_numpy()]
+        cols = ','.join(list(data.columns))
+        query = "INSERT INTO %s(%s) VALUES %%s" % ('public.book_lending_details', cols)
+        extras.execute_values(self.cursor , query, tuples)
+        self.conn.commit()
+        pass
 
 
 # db = Load_to_Database()

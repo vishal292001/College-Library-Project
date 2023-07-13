@@ -15,6 +15,7 @@ import urllib
 import pandas as pd
 import json
 import pyodbc
+import duckdb
 import database_loaders
 
 
@@ -34,12 +35,10 @@ class Book_lending_app():
         self.add_user_inputs()
 
         self.diaplay_book_name_label_y_pos = 120
-        self.selected_book_list = []
-        self.diaplay_book_name_label_lst=[]
-        self.close_book_name_label_button_lst =[]
-        self.selected_student_to_lend_book_lst = []
+
         self.student_table_name='student_details'
         self.book_table_name='books_details'
+        self.book_lending_table_name = 'book_lending_details'
 
         self.status_message_label = tk.Label(self.root, bd=0,text="",font=("Arial Bold", 14),fg="green",bg='white')
         self.status_message_label.place(x=382,y=75)
@@ -415,11 +414,18 @@ class Book_lending_app():
             return 0
         self.check_and_destroy_frame(self.root)
 
-        self.student_name_lst_in_database =[]
-        self.student_id_lst_in_database=[]
+        self.selected_book_list = []
+        self.diaplay_book_name_label_lst=[]
+        self.close_book_name_label_button_lst =[]
+        self.selected_student_to_lend_book_lst = []
+
         self.dataframe = self.load_to_db.search_in_database(self.student_table_name)
         self.student_name_lst_in_database=list(self.dataframe['student_name'])
         self.student_id_lst_in_database=list(self.dataframe['student_id'])
+
+        self.book_data_dataframe = self.load_to_db.search_in_database(self.book_table_name)
+        self.book_title_lst_in_database = list(self.book_data_dataframe['book_title'])
+        self.book_code_lst_in_database = list(self.book_data_dataframe['book_code'])
 
         self.lend_book_frame = Frame(self.root,bg="white",borderwidth=6,width=500,height=500,name='lend_book_frame',highlightbackground="black",highlightthickness=2)
         self.lend_book_frame.place(x=260,y=140)
@@ -441,41 +447,91 @@ class Book_lending_app():
         self.enter_book_code_image_label = tk.Label(self.lend_book_frame, bd=0,image=self.enter_book_code_image_lend_win)
         self.enter_book_code_image_label.place(x=295,y=20)
         
-        self.search_button_book = Button(self.lend_book_frame,image=self.search_icon_img,borderwidth=0,background='white',command=self.find_book_to_lend)
+        self.search_button_book = Button(self.lend_book_frame,image=self.search_icon_img,borderwidth=0,background='white',command=lambda:self.find_book_to_lend(self.lend_book_frame))
         self.search_button_book.place(x=420,y=22)
 
         self.book_code_combobox_var = tk.StringVar()
-        self.book_code_combobox = ttk.Combobox(self.lend_book_frame, width = 24,values=['The Great Gatsby','Pride and Prejudice','Discovery of India','Harry Potter'], textvariable=self.book_code_combobox_var)
+        self.book_code_combobox = ttk.Combobox(self.lend_book_frame, width = 24,values=self.book_title_lst_in_database, textvariable=self.book_code_combobox_var)
         self.book_code_combobox.place(x=295,y=75)
 
 
         self.from_date_calender=DateEntry(self.lend_book_frame,selectmode='day')
-        self.from_date_calender.place(x=10,y=170)
+        self.from_date_calender.place(x=10,y=190)
         self.from_date_label = tk.Label(self.lend_book_frame, text="From Date",font=("Arial Bold", 11),fg="#2f5597",bg='white')
-        self.from_date_label.place(x=110,y=170)
+        self.from_date_label.place(x=110,y=190)
 
         self.to_date_calender=DateEntry(self.lend_book_frame,selectmode='day')
-        self.to_date_calender.place(x=10,y=210)
-        self.to_date_label = tk.Label(self.lend_book_frame, text="To Date",font=("Arial Bold", 11),fg="#2f5597",bg='white')
-        self.to_date_label.place(x=110,y=210)
+        self.to_date_calender.place(x=10,y=216)
+        self.to_date_label = tk.Label(self.lend_book_frame, text="Return Date",font=("Arial Bold", 11),fg="#2f5597",bg='white')
+        self.to_date_label.place(x=110,y=216)
 
 
-        self.allot_book_button = ttk.Button(self.lend_book_frame, text="Allot Book")
+        self.allot_book_button = ttk.Button(self.lend_book_frame, text="Allot Book",command=self.allot_book_to_student)
         self.allot_book_button.place(x=140,y=456)
 
         self.allot_book_cancel_button = ttk.Button(self.lend_book_frame, text="Cancel")
         self.allot_book_cancel_button.place(x=220,y=456)
         pass
 
+    def update_student_book_window(self):
+
+        if self.load_to_db.flag==False:
+            messagebox.showinfo('information', 'User Authentication is Pending')
+            return 0
+        self.check_and_destroy_frame(self.root)
+
+        self.selected_student_to_lend_book_lst = []
+        self.dataframe = self.load_to_db.search_in_database(self.book_lending_table_name)
+        self.student_name_lst_in_database=list(self.dataframe['student_name'])
+        self.student_id_lst_in_database=list(self.dataframe['student_id'])
+
+        self.filter_student_name_list = []
+        [self.filter_student_name_list.append(x) for x in self.student_name_lst_in_database if x not in self.filter_student_name_list]
+
+        self.update_student_book_frame = Frame(self.root,bg="white",borderwidth=6,width=500,height=400,name='update_student_book_frame',highlightbackground="black",highlightthickness=2)
+        self.update_student_book_frame.place(x=260,y=140)
+
+        self.enter_student_id_image_label = tk.Label(self.update_student_book_frame, bd=0,image=self.enter_student_id_image_lend_win)
+        self.enter_student_id_image_label.place(x=10,y=20)
+
+        self.student_id_combobox_var = tk.StringVar()
+        self.student_id_combobox = ttk.Combobox(self.update_student_book_frame, width = 24,values=self.filter_student_name_list, textvariable=self.student_id_combobox_var)
+        self.student_id_combobox.place(x=12,y=75)
+
+        self.search_button_student = Button(self.update_student_book_frame,image=self.search_icon_img,borderwidth=0,background='white',command=lambda:self.find_student_to_lend_book(self.update_student_book_frame))
+        self.search_button_student.place(x=140,y=22)
+
+        self.enter_book_code_image_label = tk.Label(self.update_student_book_frame, bd=0,image=self.enter_book_code_image_lend_win)
+        self.enter_book_code_image_label.place(x=295,y=20)
+        
+        self.search_button_book = Button(self.update_student_book_frame,image=self.search_icon_img,borderwidth=0,background='white',command=lambda:self.find_book_to_lend(self.update_student_book_frame))
+        self.search_button_book.place(x=420,y=22)
+
+        self.book_code_combobox_var = tk.StringVar()
+        self.book_code_combobox = ttk.Combobox(self.update_student_book_frame, width = 24,values=['The Great Gatsby','Pride and Prejudice','Discovery of India','Harry Potter'], textvariable=self.book_code_combobox_var)
+        self.book_code_combobox.place(x=295,y=75)
+
+        self.update_student_book_button = ttk.Button(self.update_student_book_frame, text="update")
+        self.update_student_book_button.place(x=140,y=350)
+
+        self.cancel_Update_student_book_button = ttk.Button(self.update_student_book_frame, text="Cancel")
+        self.cancel_Update_student_book_button.place(x=220,y=350)
+        pass
+
     def find_student_to_lend_book(self,frame):
         self.frame = frame
         self.user_input = self.student_id_combobox.get()
-        if self.user_input in self.student_name_lst_in_database or int(self.user_input) in self.student_id_lst_in_database:
+        if self.user_input in self.student_name_lst_in_database or self.user_input in self.student_id_lst_in_database:
              if self.user_input in self.student_name_lst_in_database:
-                 pass
-             elif int(self.user_input) in self.student_id_lst_in_database:
-                 self.index_no = self.student_id_lst_in_database.index(int(self.user_input))
+                 self.index_no = self.student_name_lst_in_database.index(self.user_input)
                  self.row_data = self.dataframe.loc[self.index_no]
+                 self.user_input_id = self.row_data['student_id']
+                 self.user_input=self.user_input
+                 pass
+             elif self.user_input in self.student_id_lst_in_database:
+                 self.index_no = self.student_id_lst_in_database.index(self.user_input)
+                 self.row_data = self.dataframe.loc[self.index_no]
+                 self.user_input_id = self.user_input
                  self.user_input=self.row_data['student_name']
 
              pass
@@ -490,38 +546,74 @@ class Book_lending_app():
             for j in self.selected_student_to_lend_book_lst:
                 self.selected_student_to_lend_book_lst.pop()
                 self.selected_student_to_lend_book_lst.pop()
+                self.selected_student_to_lend_book_lst.pop()
+                self.selected_student_to_lend_book_lst.pop()
 
         if len(self.selected_student_to_lend_book_lst)==0:
+            self.diaplay_id_label = tk.Label(self.frame, text="Student ID:"+self.user_input_id,font=("Arial Bold", 11),fg="#2f5597",bg='white',borderwidth=1, relief="solid",width=18)
+            self.diaplay_id_label.place(x=12,y=110)
+    
+            self.close_student_id_label_button = Button(self.frame,image=self.close_icon_img,borderwidth=0,background='white',command=self.remove_selected_student)
+            self.close_student_id_label_button.place(x=180,y=110)
+
             self.diaplay_student_name_label = tk.Label(self.frame, text=self.user_input,font=("Arial Bold", 11),fg="#2f5597",bg='white',borderwidth=1, relief="solid",width=18)
-            self.diaplay_student_name_label.place(x=12,y=120)
+            self.diaplay_student_name_label.place(x=12,y=140)
 
             self.close_student_name_label_button = Button(self.frame,image=self.close_icon_img,borderwidth=0,background='white',command=self.remove_selected_student)
-            self.close_student_name_label_button.place(x=180,y=120)
+            self.close_student_name_label_button.place(x=180,y=140)
+
             self.selected_student_to_lend_book_lst.append(self.diaplay_student_name_label)
             self.selected_student_to_lend_book_lst.append(self.close_student_name_label_button)
+            self.selected_student_to_lend_book_lst.append(self.diaplay_id_label)
+            self.selected_student_to_lend_book_lst.append(self.close_student_id_label_button)
 
+            if self.frame.winfo_name()=='update_student_book_frame':
+                self.diplay_previously_alloted_book(self.frame)
+           
         pass
 
     def remove_selected_student(self):
         self.diaplay_student_name_label.destroy()
         self.close_student_name_label_button.destroy()
+        self.diaplay_id_label.destroy()
+        self.close_student_id_label_button.destroy()
         self.selected_student_to_lend_book_lst=[]
 
     def find_book_to_lend(self,frame):
-            self.frame = frame
-            if self.book_code_combobox.get() not in self.selected_book_list:
-                self.selected_book_list.append(self.book_code_combobox.get())
-                self.diaplay_book_name_label = tk.Label(self.frame, text=self.book_code_combobox.get(),font=("Arial Bold", 11),fg="#2f5597",bg='white',borderwidth=1, relief="solid",width=18)
-                self.diaplay_book_name_label.place(x=295,y=self.diaplay_book_name_label_y_pos)
+        self.frame = frame
 
-                self.label_var=tk.StringVar()
-                self.close_book_name_label_button = tk.Label(self.frame,image=self.close_icon_img,textvariable=self.label_var)
-                self.close_book_name_label_button.place(x=465,y=self.diaplay_book_name_label_y_pos)
-                self.close_book_name_label_button.bind("<Button-1>", lambda event,book_name_label =self.diaplay_book_name_label,close_book_name_icon=self.close_book_name_label_button,book_name=self.book_code_combobox.get(): self.remove_selected_book(book_name_label,close_book_name_icon,book_name))
+        self.book_user_input = self.book_code_combobox.get()
+    
+        if self.book_user_input in self.book_title_lst_in_database or self.book_user_input in self.book_code_lst_in_database:
+             if self.book_user_input in self.book_title_lst_in_database:
+                 pass
+             elif self.book_user_input in self.book_code_lst_in_database:
+                 self.index_no = self.book_code_lst_in_database.index(self.book_user_input)
+                 self.row_data = self.book_data_dataframe.loc[self.index_no]
+                 self.book_user_input=self.row_data['book_title']
 
-                self.diaplay_book_name_label_lst.append(self.diaplay_book_name_label)
-                self.close_book_name_label_button_lst.append(self.close_book_name_label_button)
-                self.diaplay_book_name_label_y_pos+=40
+             pass
+        else:
+             messagebox.showinfo('information', 'Book not found')
+             return 0
+
+        if len(self.selected_book_list)==4:
+            messagebox.showinfo('information', 'maximum four book can be assigne to student')
+            return 0
+
+        if self.book_user_input not in self.selected_book_list:
+            self.selected_book_list.append(self.book_user_input)
+            self.diaplay_book_name_label = tk.Label(self.frame, text=self.book_user_input,font=("Arial Bold", 11),fg="#2f5597",bg='white',borderwidth=1, relief="solid",width=18)
+            self.diaplay_book_name_label.place(x=295,y=self.diaplay_book_name_label_y_pos)
+
+            self.label_var=tk.StringVar()
+            self.close_book_name_label_button = tk.Label(self.frame,image=self.close_icon_img,textvariable=self.label_var)
+            self.close_book_name_label_button.place(x=465,y=self.diaplay_book_name_label_y_pos)
+            self.close_book_name_label_button.bind("<Button-1>", lambda event,book_name_label =self.diaplay_book_name_label,close_book_name_icon=self.close_book_name_label_button,book_name=self.book_user_input: self.remove_selected_book(book_name_label,close_book_name_icon,book_name))
+
+            self.diaplay_book_name_label_lst.append(self.diaplay_book_name_label)
+            self.close_book_name_label_button_lst.append(self.close_book_name_label_button)
+            self.diaplay_book_name_label_y_pos+=40
 
     def remove_selected_book(self,book_name_label,close_book_name_icon,book_name):
         book_name_label.destroy()
@@ -541,38 +633,14 @@ class Book_lending_app():
                 j.place(x=465,y=self.diaplay_book_name_label_y_pos)
                 self.diaplay_book_name_label_y_pos+=40
 
-    def update_student_book_window(self):
-        self.check_and_destroy_frame(self.root)
-        self.update_student_book_frame = Frame(self.root,bg="white",borderwidth=6,width=500,height=400,name='update_student_book_frame',highlightbackground="black",highlightthickness=2)
-        self.update_student_book_frame.place(x=260,y=140)
-
-        self.enter_student_id_image_label = tk.Label(self.update_student_book_frame, bd=0,image=self.enter_student_id_image_lend_win)
-        self.enter_student_id_image_label.place(x=10,y=20)
-
-        self.student_id_combobox_var = tk.StringVar()
-        self.student_id_combobox = ttk.Combobox(self.update_student_book_frame, width = 24,values=['Vishal Nitavne','Vanshika Deshpande'], textvariable=self.student_id_combobox_var)
-        self.student_id_combobox.place(x=12,y=75)
-
-        self.search_button_student = Button(self.update_student_book_frame,image=self.search_icon_img,borderwidth=0,background='white',command=lambda:self.find_student_to_lend_book(self.update_student_book_frame))
-        self.search_button_student.place(x=140,y=22)
-
-        self.enter_book_code_image_label = tk.Label(self.update_student_book_frame, bd=0,image=self.enter_book_code_image_lend_win)
-        self.enter_book_code_image_label.place(x=295,y=20)
-        
-        self.search_button_book = Button(self.update_student_book_frame,image=self.search_icon_img,borderwidth=0,background='white',command=lambda:self.find_book_to_lend(self.update_student_book_frame))
-        self.search_button_book.place(x=420,y=22)
-
-        self.book_code_combobox_var = tk.StringVar()
-        self.book_code_combobox = ttk.Combobox(self.update_student_book_frame, width = 24,values=['The Great Gatsby','Pride and Prejudice','Discovery of India','Harry Potter'], textvariable=self.book_code_combobox_var)
-        self.book_code_combobox.place(x=295,y=75)
-
-
-
-        self.update_student_book_button = ttk.Button(self.update_student_book_frame, text="update")
-        self.update_student_book_button.place(x=140,y=350)
-
-        self.cancel_Update_student_book_button = ttk.Button(self.update_student_book_frame, text="Cancel")
-        self.cancel_Update_student_book_button.place(x=220,y=350)
+    def diplay_previously_alloted_book(self,frame):
+        self.frame = frame
+        self.book_lending_details_dataframe=self.load_to_db.search_in_database(self.book_lending_table_name)
+        # duckdb.query("select count(*) as billable_cnt from df where dm_name = 'sanket' and Exection_hub='iDEAS-DIGITAL-EXECUTION HUB-EUROPE' and billable_cat='%s'" %i).df()
+        print(self.book_lending_details_dataframe)
+        self.previously_alloted_book_df = duckdb.query("select * from self.book_lending_details_dataframe where student_id='1001'").df()
+       
+        print(self.previously_alloted_book_df)
         pass
 
 
@@ -593,7 +661,7 @@ class Book_lending_app():
                 return 0
         self.df = self.load_to_db.search_in_database(self.student_table_name)
         self.student_id_list = list(self.df['student_id'])
-        self.student_id = int(self.student_id_text_box.get("1.0", "end-1c"))
+        self.student_id = self.student_id_text_box.get("1.0", "end-1c")
         if self.student_id in self.student_id_list:
             messagebox.showinfo('information', 'student with this id already exist in database')
             return 0
@@ -618,7 +686,7 @@ class Book_lending_app():
                 return 0
         self.dataframe = self.load_to_db.search_in_database(self.book_table_name)
         self.book_code_list = list(self.dataframe['book_code'])
-        self.book_code = int(self.book_code_text_box.get("1.0", "end-1c"))
+        self.book_code = self.book_code_text_box.get("1.0", "end-1c")
         if self.book_code in self.book_code_list:
             messagebox.showinfo('information', 'book with this id already exist in database')
             return 0
@@ -631,7 +699,7 @@ class Book_lending_app():
         if self.load_to_db.flag==False:
             messagebox.showinfo('information', 'User Authentication is Pending')
             return 0
-        self.element_id=int(element_id)
+        self.element_id=element_id
         self.table_name = table_name
         self.dataframe = self.load_to_db.search_in_database(self.table_name)
         print(self.dataframe)
@@ -702,6 +770,59 @@ class Book_lending_app():
         else:
             messagebox.showinfo('information', 'failed to delete book')
         
+
+    def allot_book_to_student(self):
+        print('---------------------------')
+        print(self.selected_book_list)
+        print(self.diaplay_student_name_label.cget("text"))
+        print(self.diaplay_id_label.cget("text"))
+        self.selected_student_id=str(self.diaplay_id_label.cget("text")).split(':')
+        self.selected_student_id_list=[]
+        self.selected_student_name_list =[]
+        self.selected_book_code_list=[]
+        self.selected_book_author_list=[]
+        self.selected_book_description_list=[]
+        self.from_date_list=[]
+        self.to_date_list=[]
+        self.selected_data_dataframe= self.load_to_db.search_in_database(self.book_table_name)
+        self.book_data_book_title_list = list(self.selected_data_dataframe['book_title'])
+        for i in self.selected_book_list:
+            self.index = self.book_data_book_title_list.index(i)
+            self.record = self.selected_data_dataframe.loc[self.index]
+            self.selected_book_code_list.append(self.record['book_code'])
+            self.selected_book_author_list.append(self.record['book_author'])
+            self.selected_book_description_list.append(self.record['book_description'])
+            self.selected_student_id_list.append(self.selected_student_id[1])
+            self.selected_student_name_list.append(self.diaplay_student_name_label.cget("text"))
+            self.from_date_list.append(self.from_date_calender.get_date())
+            self.to_date_list.append(self.to_date_calender.get_date())
+
+        self.book_lending_data_to_be_load={'student_id':self.selected_student_id_list,
+                                           'student_name':self.selected_student_name_list,
+                                           'book_code':self.selected_book_code_list,
+                                           'book_title':self.selected_book_list,
+                                           'book_author':self.selected_book_author_list,
+                                           'book_description':self.selected_book_description_list,   
+                                           'assigne_date':self.from_date_list,
+                                           'return_date':self.to_date_list
+                                           }
+        
+        
+        self.book_lending_data_to_be_load_dataframe = pd.DataFrame(self.book_lending_data_to_be_load)
+        print(self.book_lending_data_to_be_load_dataframe)
+        self.load_to_db.load_book_lending_details(self.book_lending_data_to_be_load_dataframe)
+
+
+        
+        if len(self.selected_book_list)==0:
+             messagebox.showinfo('information', 'please select book from dropdown')
+             return 0
+
+
+        pass
+
+
+
     def check_and_destroy_frame(self,root):
         self.status_message_label.config(text='',font=("Arial Bold", 10))
         for child in root.winfo_children():
