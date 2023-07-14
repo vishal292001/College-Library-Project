@@ -17,7 +17,14 @@ import json
 import pyodbc
 import duckdb
 import database_loaders
-
+import add_new_student_window
+import update_student_details_window
+import delete_student_window
+import add_new_book_window
+import update_book_details_window
+import delete_book_window
+import book_lending_window
+import update_lended_book_window
 
 
 
@@ -29,25 +36,65 @@ class Book_lending_app():
         self.root.geometry('1150x700')
         self.root.configure(bg='white')
 
-        self.load_to_db = database_loaders.Load_to_Database()
         self.add_baground_images()
+
+       
+        self.status_message_label = tk.Label(self.root, bd=0,text="",font=("Arial Bold", 14),fg="green",bg='white')
+        self.status_message_label.place(x=382,y=75)
+        self.load_to_db = database_loaders.Load_to_Database()
+        self.add_new_student=add_new_student_window.add_new_student_in_database(self.root,self.load_to_db,self.status_message_label)
+        self.update_student_details=update_student_details_window.update_student_details_window(self.root,self.load_to_db,self.status_message_label)
+        self.delete_student=delete_student_window.delete_student_window(self.root,self.load_to_db,self.status_message_label)
+        self.add_new_book = add_new_book_window.add_new_book_window(self.root,self.load_to_db,self.status_message_label)
+        self.update_book_details = update_book_details_window.update_book_details_window(self.root,self.load_to_db,self.status_message_label)
+        self.delete_book = delete_book_window.delete_book_window(self.root,self.load_to_db,self.status_message_label)
+        self.lend_book = book_lending_window.book_lending_window(self.root,self.load_to_db,self.status_message_label)
+        self.update_lended_book = update_lended_book_window.update_lended_book_window(self.root,self.load_to_db,self.status_message_label)
+
         self.add_buttons()
         self.add_user_inputs()
+
+ 
 
         self.diaplay_book_name_label_y_pos = 120
 
         self.student_table_name='student_details'
         self.book_table_name='books_details'
         self.book_lending_table_name = 'book_lending_details'
+        
+        self.total_book = tk.Label(text="", font=("Arial Bold", 11), fg="green", bg="white")
+        self.total_book.place(x=884, y=170)
+  
+        self.total_student = tk.Label(text="", font=("Arial Bold", 11), fg="green", bg="white")
+        self.total_student.place(x=1004, y=170)
 
-        self.status_message_label = tk.Label(self.root, bd=0,text="",font=("Arial Bold", 14),fg="green",bg='white')
-        self.status_message_label.place(x=382,y=75)
+        self.total_lended_books = tk.Label(text="", font=("Arial Bold", 11), fg="green", bg="white")
+        self.total_lended_books.place(x=884, y=265)
+
+        
+        self.total_books_to_return = tk.Label(text="", font=("Arial Bold", 11), fg="green", bg="white")
+        self.total_books_to_return.place(x=1004, y=265)
+
+        # self.update_analytics_count()
 
 
     
     def mainloop(self):
         self.root.mainloop()
 
+
+
+    def update_analytics_count(self):
+        book_count = self.load_to_db.get_book_details_count()
+        student_count = self.load_to_db.get_student_details_count()
+        total_lended_books_count = self.load_to_db.book_lend_details_count()
+        total_book_to_return_count = self.load_to_db.get_return_dates_count()
+
+        self.total_book.config(text=str(book_count))
+        self.total_student.config(text=str(student_count))
+        self.total_lended_books.config(text=str(total_lended_books_count))
+        self.total_books_to_return.config(text=str(total_book_to_return_count))
+        self.total_book.after(500,self.update_analytics_count)
 
     def add_baground_images(self):
         self.app_icon_img = tk.PhotoImage(file='./images/app_icon.png')
@@ -90,50 +137,52 @@ class Book_lending_app():
         self.load_to_databse_details_bg_label = tk.Label(self.root, bd=0,image=self.load_to_databse_details_bg_img)
         self.load_to_databse_details_bg_label.place(x=820,y=400)
 
-
+        self.analytics_window_img = tk.PhotoImage(file='./images/analytics_window.png')
+        self.analytics_window_img_label = tk.Label(self.root, bd=0,image=self.analytics_window_img)
+        self.analytics_window_img_label.place(x=840,y=65)
 
         pass
 
     def add_buttons(self):
         self.add_new_student_button_image = Image.open("./images/add_new_student_img_light_blue.png")
         self.add_new_student_button_image = ImageTk.PhotoImage(self.add_new_student_button_image)
-        self.add_new_student_button = Button(self.root,image=self.add_new_student_button_image,borderwidth=0,background='white',command=self.add_new_student_window)
+        self.add_new_student_button = Button(self.root,image=self.add_new_student_button_image,borderwidth=0,background='white',command=self.add_new_student.add_new_student_window)
         self.add_new_student_button.place(x=32,y=80)
 
         self.update_student_details_image = Image.open("./images/update_student_img_light_blue.png")
         self.update_student_details_image = ImageTk.PhotoImage(self.update_student_details_image)
-        self.update_student_details_button = Button(self.root,image=self.update_student_details_image,borderwidth=0,background='white',command=self.update_student_details_window)
+        self.update_student_details_button = Button(self.root,image=self.update_student_details_image,borderwidth=0,background='white',command=self.update_student_details.update_student_details)
         self.update_student_details_button.place(x=32,y=130)
 
         self.delete_student_image = Image.open("./images/delete_student_img_light_blue.png")
         self.delete_student_image = ImageTk.PhotoImage(self.delete_student_image)
-        self.delete_student_button = Button(self.root,image=self.delete_student_image,borderwidth=0,background='white',command=self.delete_student_window)
+        self.delete_student_button = Button(self.root,image=self.delete_student_image,borderwidth=0,background='white',command=self.delete_student.delete_student_record)
         self.delete_student_button.place(x=32,y=175)
 
         self.add_new_book_button_image = Image.open("./images/add_new_book_img.png")
         self.add_new_book_button_image = ImageTk.PhotoImage(self.add_new_book_button_image)
-        self.add_new_book_button = Button(self.root,image=self.add_new_book_button_image,borderwidth=0,background='white',command=self.add_new_book_window)
+        self.add_new_book_button = Button(self.root,image=self.add_new_book_button_image,borderwidth=0,background='white',command=self.add_new_book.add_new_book_in_database)
         self.add_new_book_button.place(x=32,y=270)
 
         self.update_book_button_image = Image.open("./images/update_book_img.png")
         self.update_book_button_image = ImageTk.PhotoImage(self.update_book_button_image)
-        self.update_book_button = Button(self.root,image=self.update_book_button_image,borderwidth=0,background='white',command=self.update_book_details_window)
+        self.update_book_button = Button(self.root,image=self.update_book_button_image,borderwidth=0,background='white',command=self.update_book_details.update_book_details)
         self.update_book_button.place(x=32,y=320)
 
         self.delete_book_button_image = Image.open("./images/delete_book_img.png")
         self.delete_book_button_image = ImageTk.PhotoImage(self.delete_book_button_image)
-        self.delete_book_button = Button(self.root,image=self.delete_book_button_image,borderwidth=0,background='white',command=self.delete_book_window)
+        self.delete_book_button = Button(self.root,image=self.delete_book_button_image,borderwidth=0,background='white',command=self.delete_book.delete_book_record)
         self.delete_book_button.place(x=32,y=370)
 
 
         self.lend_book_button_image = Image.open("./images/lend_book_img_green.png")
         self.lend_book_button_image = ImageTk.PhotoImage(self.lend_book_button_image)
-        self.lend_book_button = Button(self.root,image=self.lend_book_button_image,borderwidth=0,background='white',command=self.lend_book_window)
+        self.lend_book_button = Button(self.root,image=self.lend_book_button_image,borderwidth=0,background='white',command=self.lend_book.lend_book_from_library)
         self.lend_book_button.place(x=32,y=470)
 
         self.update_student_book_button_image = Image.open("./images/update_student_book_img_green.png")
         self.update_student_book_button_image = ImageTk.PhotoImage(self.update_student_book_button_image)
-        self.update_student_book_button = Button(self.root,image=self.update_student_book_button_image,borderwidth=0,background='white',command=self.update_student_book_window)
+        self.update_student_book_button = Button(self.root,image=self.update_student_book_button_image,borderwidth=0,background='white',command=self.update_lended_book.update_lended_book)
         self.update_student_book_button.place(x=32,y=520)
 
         self.delete_student_book_button_image = Image.open("./images/delete_student_book_img_green.png")
@@ -185,228 +234,8 @@ class Book_lending_app():
 
 
 
-    def add_new_student_window(self):
-        self.check_and_destroy_frame(self.root)
-        self.student_details_frame = Frame(self.root,bg="white",borderwidth=6,width=500,height=400,name='add_student_frame',highlightbackground="black",highlightthickness=2)
-        self.student_details_frame.place(x=260,y=140)
-
-        self.student_details_img = tk.PhotoImage(file='./images/student_details_img.png')
-        self.student_details_img_label = tk.Label(self.student_details_frame, bd=0,image=self.student_details_img)
-        self.student_details_img_label.place(x=20,y=40)
-        
-        
-        self.student_id_text_box = tk.Text(self.student_details_frame,height = 1,width = 25, highlightthickness=1,highlightbackground="blue")
-        self.student_id_text_box.place(x=220,y=55)
-
-        self.student_name_text_box = tk.Text(self.student_details_frame,height = 1,width = 25, highlightthickness=1,highlightbackground="blue")
-        self.student_name_text_box.place(x=220,y=110)
-
-        self.student_email_text_box = tk.Text(self.student_details_frame,height = 1,width = 25, highlightthickness=1,highlightbackground="blue")
-        self.student_email_text_box.place(x=220,y=165)
-
-        self.student_phone_text_box = tk.Text(self.student_details_frame,height = 1,width = 25, highlightthickness=1,highlightbackground="blue")
-        self.student_phone_text_box.place(x=220,y=215)
  
-        self.add_student_to_db_button = ttk.Button(self.student_details_frame, text="ADD",command=self.add_new_student_to_database)
-        self.add_student_to_db_button.place(x=140,y=310)
 
-        self.cancel_button = ttk.Button(self.student_details_frame, text="CANCEL")
-        self.cancel_button.place(x=240,y=310)
-        pass
-
-    def update_student_details_window(self):
-        self.check_and_destroy_frame(self.root)
-        self.update_student_details_frame = Frame(self.root,bg="white",borderwidth=6,width=500,height=400,name='update_student_frame',highlightbackground="black",highlightthickness=2)
-        self.update_student_details_frame.place(x=260,y=140)
-
-
-        self.enter_student_id_image = tk.PhotoImage(file='./images/enter_student_id_img.png')
-        self.enter_student_id_image_label = tk.Label(self.update_student_details_frame, bd=0,image=self.enter_student_id_image)
-        self.enter_student_id_image_label.place(x=10,y=40)
-
-        self.student_id_text_box = tk.Text(self.update_student_details_frame,height = 1,width = 22, highlightthickness=1,highlightbackground="blue")
-        self.student_id_text_box.place(x=184,y=55)
-
-        self.search_student_img = Image.open("./images/search_img.png")
-        self.search_student_img = self.search_student_img.resize((90, 50))
-        self.search_student_img = ImageTk.PhotoImage(self.search_student_img)
-        self.search_button = Button(self.update_student_details_frame,image=self.search_student_img,borderwidth=0,background='white',command=lambda:self.search_element_in_database(self.student_id_text_box.get("1.0", "end-1c"),self.student_table_name))
-        self.search_button.place(x=380,y=35)
-
-        self.update_student_details_bg_image = tk.PhotoImage(file='./images/update_student_details_bg_img.png')
-        self.update_student_details_bg_image_label = tk.Label(self.update_student_details_frame, bd=0,image=self.update_student_details_bg_image)
-        self.update_student_details_bg_image_label.place(x=5,y=120)
-
-        self.student_name_text_box = tk.Text(self.update_student_details_frame,height = 1,width = 22, highlightthickness=1,highlightbackground="blue")
-        self.student_name_text_box.place(x=184,y=135)
-
-        self.student_email_text_box = tk.Text(self.update_student_details_frame,height = 1,width = 22, highlightthickness=1,highlightbackground="blue")
-        self.student_email_text_box.place(x=184,y=195)
-
-        self.student_phone_text_box = tk.Text(self.update_student_details_frame,height = 1,width = 22, highlightthickness=1,highlightbackground="blue")
-        self.student_phone_text_box.place(x=184,y=250)
-
-        self.update_student_button = ttk.Button(self.update_student_details_frame, text="Update",command=self.update_student_details_in_database)
-        self.update_student_button.place(x=140,y=320)
-
-        self.update_cancel_button = ttk.Button(self.update_student_details_frame, text="Cancel")
-        self.update_cancel_button.place(x=240,y=320)
-
-        pass
-
-
-    def delete_student_window(self):
-        self.check_and_destroy_frame(self.root)
-        self.delete_student_frame = Frame(self.root,bg="white",borderwidth=6,width=500,height=400,name='delete_student_frame',highlightbackground="black",highlightthickness=2)
-        self.delete_student_frame.place(x=260,y=140)
-
-
-        self.enter_student_id_image = tk.PhotoImage(file='./images/enter_student_id_img.png')
-        self.enter_student_id_image_label = tk.Label(self.delete_student_frame, bd=0,image=self.enter_student_id_image)
-        self.enter_student_id_image_label.place(x=10,y=40)
-
-        self.student_id_text_box = tk.Text(self.delete_student_frame,height = 1,width = 22, highlightthickness=1,highlightbackground="blue")
-        self.student_id_text_box.place(x=184,y=55)
-
-
-
-        self.search_student_img = Image.open("./images/search_img.png")
-        self.search_student_img = self.search_student_img.resize((90, 50))
-        self.search_student_img = ImageTk.PhotoImage(self.search_student_img)
-        self.search_button = Button(self.delete_student_frame,image=self.search_student_img,borderwidth=0,background='white',command=lambda:self.search_element_in_database(self.student_id_text_box.get("1.0", "end-1c"),self.student_table_name))
-        self.search_button.place(x=380,y=35)
-
-        self.delete_student_details_bg_image = tk.PhotoImage(file='./images/update_student_details_bg_img.png')
-        self.delete_student_details_bg_image_label = tk.Label(self.delete_student_frame, bd=0,image=self.delete_student_details_bg_image)
-        self.delete_student_details_bg_image_label.place(x=5,y=120)
-
-        self.student_name_text_box = tk.Text(self.delete_student_frame,height = 1,width = 22, highlightthickness=1,highlightbackground="blue")
-        self.student_name_text_box.place(x=184,y=135)
-
-        self.student_email_text_box = tk.Text(self.delete_student_frame,height = 1,width = 22, highlightthickness=1,highlightbackground="blue")
-        self.student_email_text_box.place(x=184,y=195)
-
-        self.student_phone_text_box = tk.Text(self.delete_student_frame,height = 1,width = 22, highlightthickness=1,highlightbackground="blue")
-        self.student_phone_text_box.place(x=184,y=250)
-
-        self.delete_student_button = ttk.Button(self.delete_student_frame, text="Delete",command=self.delete_student_from_database)
-        self.delete_student_button.place(x=140,y=320)
-
-        self.delete_cancel_button = ttk.Button(self.delete_student_frame, text="Cancel")
-        self.delete_cancel_button.place(x=240,y=320)
-
-        pass
-
-
-    def add_new_book_window(self):
-        self.check_and_destroy_frame(self.root)
-        self.add_new_book_frame = Frame(self.root,bg="white",borderwidth=6,width=500,height=400,name='add_book_frame',highlightbackground="black",highlightthickness=2)
-        self.add_new_book_frame.place(x=260,y=140)
-
-        self.new_book_details_img = tk.PhotoImage(file='./images/book_details_img.png')
-        self.new_book_details_img_label = tk.Label(self.add_new_book_frame, bd=0,image=self.new_book_details_img)
-        self.new_book_details_img_label.place(x=20,y=40)
-
-        self.book_code_text_box = tk.Text(self.add_new_book_frame,height = 1,width = 25, highlightthickness=1,highlightbackground="blue")
-        self.book_code_text_box.place(x=220,y=65)
-
-        self.book_title_text_box = tk.Text(self.add_new_book_frame,height = 1,width = 25, highlightthickness=1,highlightbackground="blue")
-        self.book_title_text_box.place(x=220,y=120)
-
-        self.book_author_text_box = tk.Text(self.add_new_book_frame,height = 1,width = 25, highlightthickness=1,highlightbackground="blue")
-        self.book_author_text_box.place(x=220,y=175)
-
-        self.book_descr_text_box = tk.Text(self.add_new_book_frame,height = 2,width = 25, highlightthickness=1,highlightbackground="blue")
-        self.book_descr_text_box.place(x=220,y=225)
-
-        self.add_book_to_db_button = ttk.Button(self.add_new_book_frame, text="ADD",command=self.add_new_book_to_database)
-        self.add_book_to_db_button.place(x=140,y=310)
-
-        self.cancel_adding_book_button = ttk.Button(self.add_new_book_frame, text="CANCEL")
-        self.cancel_adding_book_button.place(x=240,y=310)
-
-        pass
-
-    def update_book_details_window(self):
-        self.check_and_destroy_frame(self.root)
-        self.update_book_details_frame = Frame(self.root,bg="white",borderwidth=6,width=500,height=400,name='update_book_frame',highlightbackground="black",highlightthickness=2)
-        self.update_book_details_frame.place(x=260,y=140)
-
-
-        self.enter_book_code_image = tk.PhotoImage(file='./images/enter_book_code_img.png')
-        self.enter_book_code_image_label = tk.Label(self.update_book_details_frame, bd=0,image=self.enter_book_code_image)
-        self.enter_book_code_image_label.place(x=10,y=40)
-
-        self.book_code_text_box = tk.Text(self.update_book_details_frame,height = 1,width = 22, highlightthickness=1,highlightbackground="blue")
-        self.book_code_text_box.place(x=184,y=55)
-
-        self.search_book_img = Image.open("./images/search_img.png")
-        self.search_book_img = self.search_book_img.resize((90, 50))
-        self.search_book_img = ImageTk.PhotoImage(self.search_book_img)
-        self.search_button = Button(self.update_book_details_frame,image=self.search_book_img,borderwidth=0,background='white',command=lambda:self.search_element_in_database(self.book_code_text_box.get("1.0", "end-1c"),self.book_table_name))
-        self.search_button.place(x=380,y=35)
-
-        self.update_book_details_bg_image = tk.PhotoImage(file='./images/update_book_details_img.png')
-        self.update_book_details_bg_image_label = tk.Label(self.update_book_details_frame, bd=0,image=self.update_book_details_bg_image)
-        self.update_book_details_bg_image_label.place(x=5,y=120)
-
-        self.book_title_text_box = tk.Text(self.update_book_details_frame,height = 1,width = 22, highlightthickness=1,highlightbackground="blue")
-        self.book_title_text_box.place(x=184,y=135)
-
-        self.book_author_text_box = tk.Text(self.update_book_details_frame,height = 1,width = 22, highlightthickness=1,highlightbackground="blue")
-        self.book_author_text_box.place(x=184,y=195)
-
-        self.book_descr_text_box = tk.Text(self.update_book_details_frame,height = 2,width = 22, highlightthickness=1,highlightbackground="blue")
-        self.book_descr_text_box.place(x=184,y=250)
-
-        self.update_book_button = ttk.Button(self.update_book_details_frame, text="Update",command=self.update_book_details_in_database)
-        self.update_book_button.place(x=140,y=320)
-
-        self.update_book_cancel_button = ttk.Button(self.update_book_details_frame, text="Cancel")
-        self.update_book_cancel_button.place(x=240,y=320)
-
-        pass
-
-
-    def delete_book_window(self):
-        self.check_and_destroy_frame(self.root)
-        self.delete_book_frame = Frame(self.root,bg="white",borderwidth=6,width=500,height=400,name='delete_book_frame',highlightbackground="black",highlightthickness=2)
-        self.delete_book_frame.place(x=260,y=140)
-
-
-        self.enter_book_code_image = tk.PhotoImage(file='./images/enter_book_code_img.png')
-        self.enter_book_code_image_label = tk.Label(self.delete_book_frame, bd=0,image=self.enter_book_code_image)
-        self.enter_book_code_image_label.place(x=10,y=40)
-
-        self.book_code_text_box = tk.Text(self.delete_book_frame,height = 1,width = 22, highlightthickness=1,highlightbackground="blue")
-        self.book_code_text_box.place(x=184,y=55)
-
-        self.search_book_img = Image.open("./images/search_img.png")
-        self.search_book_img = self.search_book_img.resize((90, 50))
-        self.search_book_img = ImageTk.PhotoImage(self.search_book_img)
-        self.search_button = Button(self.delete_book_frame,image=self.search_book_img,borderwidth=0,background='white',command=lambda:self.search_element_in_database(self.book_code_text_box.get("1.0", "end-1c"),self.book_table_name))
-        self.search_button.place(x=380,y=35)
-
-        self.delete_book_bg_image = tk.PhotoImage(file='./images/update_book_details_img.png')
-        self.delete_book_bg_image_label = tk.Label(self.delete_book_frame, bd=0,image=self.delete_book_bg_image)
-        self.delete_book_bg_image_label.place(x=5,y=120)
-
-        self.book_title_text_box = tk.Text(self.delete_book_frame,height = 1,width = 22, highlightthickness=1,highlightbackground="blue")
-        self.book_title_text_box.place(x=184,y=135)
-
-        self.book_author_text_box = tk.Text(self.delete_book_frame,height = 1,width = 22, highlightthickness=1,highlightbackground="blue")
-        self.book_author_text_box.place(x=184,y=195)
-
-        self.book_descr_text_box = tk.Text(self.delete_book_frame,height = 1,width = 22, highlightthickness=1,highlightbackground="blue")
-        self.book_descr_text_box.place(x=184,y=250)
-
-        self.delete_book_button = ttk.Button(self.delete_book_frame, text="Delete",command=self.delete_book_from_database)
-        self.delete_book_button.place(x=140,y=320)
-
-        self.delete_book_cancel_button = ttk.Button(self.delete_book_frame, text="Cancel")
-        self.delete_book_cancel_button.place(x=240,y=320)
-
-        pass
 
     def lend_book_window(self):
         if self.load_to_db.flag==False:
@@ -635,141 +464,29 @@ class Book_lending_app():
 
     def diplay_previously_alloted_book(self,frame):
         self.frame = frame
-        self.book_lending_details_dataframe=self.load_to_db.search_in_database(self.book_lending_table_name)
+        book_lending_details_dataframe=self.load_to_db.search_in_database(self.book_lending_table_name)
         # duckdb.query("select count(*) as billable_cnt from df where dm_name = 'sanket' and Exection_hub='iDEAS-DIGITAL-EXECUTION HUB-EUROPE' and billable_cat='%s'" %i).df()
-        print(self.book_lending_details_dataframe)
-        self.previously_alloted_book_df = duckdb.query("select * from self.book_lending_details_dataframe where student_id='1001'").df()
-       
+        self.previously_alloted_book_df = duckdb.query("select * from book_lending_details_dataframe where student_id='1001'").df()
+        self.previously_alloted_book_list = list(self.previously_alloted_book_df['book_title'])
         print(self.previously_alloted_book_df)
+        self.diaplay_book_name_label_y_pos=120
+        for book_name in self.previously_alloted_book_list:
+            self.diaplay_book_name_label = tk.Label(self.frame, text=book_name,font=("Arial Bold", 11),fg="#2f5597",bg='white',borderwidth=1, relief="solid",width=18)
+            self.diaplay_book_name_label.place(x=295,y=self.diaplay_book_name_label_y_pos)
+
+            self.label_var=tk.StringVar()
+            self.close_book_name_label_button = tk.Label(self.frame,image=self.close_icon_img,textvariable=self.label_var)
+            self.close_book_name_label_button.place(x=465,y=self.diaplay_book_name_label_y_pos)
+            self.close_book_name_label_button.bind("<Button-1>", lambda event,book_name_label =self.diaplay_book_name_label,close_book_name_icon=self.close_book_name_label_button,book_name=book_name: self.remove_selected_book(book_name_label,close_book_name_icon,book_name))
+
+            self.diaplay_book_name_label_y_pos+=35
         pass
 
 
-    def add_new_student_to_database(self):
-        self.student_details_list =[]
-        self.student_details_list.append(self.student_id_text_box.get("1.0", "end-1c"))
-        self.student_details_list.append(self.student_name_text_box.get("1.0", "end-1c"))
-        self.student_details_list.append(self.student_email_text_box.get("1.0", "end-1c"))
-        self.student_details_list.append(self.student_phone_text_box.get("1.0", "end-1c"))
-        print(self.student_details_list)
-
-        for i in self.student_details_list:
-            if len(i)==0:
-                messagebox.showinfo('information', 'Field is Empty')
-                return 0
-        if self.load_to_db.flag==False:
-                messagebox.showinfo('information', 'User Authentication is Pending')
-                return 0
-        self.df = self.load_to_db.search_in_database(self.student_table_name)
-        self.student_id_list = list(self.df['student_id'])
-        self.student_id = self.student_id_text_box.get("1.0", "end-1c")
-        if self.student_id in self.student_id_list:
-            messagebox.showinfo('information', 'student with this id already exist in database')
-            return 0
-        else:
-            self.load_to_db.load_student_to_database(tuple(self.student_details_list))
-            if self.load_to_db.flag:
-                self.status_message_label.config(text='Student is Added to Database Successfully StudentID:'+str(self.student_details_list[0]),font=("Arial Bold", 10))
-
-    def add_new_book_to_database(self):
-        self.book_details_list =[]
-        self.book_details_list.append(self.book_code_text_box.get("1.0", "end-1c"))
-        self.book_details_list.append(self.book_title_text_box.get("1.0", "end-1c"))
-        self.book_details_list.append(self.book_author_text_box.get("1.0", "end-1c"))
-        self.book_details_list.append(self.book_descr_text_box.get("1.0", "end-1c"))
-
-        for i in self.book_details_list:
-            if len(i)==0:
-                messagebox.showinfo('information', 'Field is Empty')
-                return 0
-        if self.load_to_db.flag==False:
-                messagebox.showinfo('information', 'User Authentication is Pending')
-                return 0
-        self.dataframe = self.load_to_db.search_in_database(self.book_table_name)
-        self.book_code_list = list(self.dataframe['book_code'])
-        self.book_code = self.book_code_text_box.get("1.0", "end-1c")
-        if self.book_code in self.book_code_list:
-            messagebox.showinfo('information', 'book with this id already exist in database')
-            return 0
-        else:
-            self.load_to_db.load_book_to_database(tuple(self.book_details_list))
-            if self.load_to_db.flag:
-                self.status_message_label.config(text='Book is Added to Database Successfully Book Code:'+str(self.book_details_list[0]),font=("Arial Bold", 10))
-    
-    def search_element_in_database(self,element_id,table_name):
-        if self.load_to_db.flag==False:
-            messagebox.showinfo('information', 'User Authentication is Pending')
-            return 0
-        self.element_id=element_id
-        self.table_name = table_name
-        self.dataframe = self.load_to_db.search_in_database(self.table_name)
-        print(self.dataframe)
-        if self.table_name=='student_details':
-            self.element_id_list = list(self.dataframe['student_id'])
-        elif self.table_name=='books_details':
-            self.element_id_list = list(self.dataframe['book_code'])
-
-        if self.element_id in self.element_id_list:
-            self.row_index = self.element_id_list.index(self.element_id)
-            self.row = self.dataframe.loc[self.row_index]
-            if self.table_name=='student_details':
-                self.student_id=self.student_id_text_box.get("1.0", "end-1c")
-                self.student_name_text_box.delete("1.0","end")
-                self.student_email_text_box.delete("1.0","end")
-                self.student_phone_text_box.delete("1.0","end")
-                self.student_name_text_box.insert(tk.END,self.row['student_name'])
-                self.student_email_text_box.insert(tk.END,self.row['student_email'])
-                self.student_phone_text_box.insert(tk.END,self.row['student_phone'])
-            elif self.table_name=='books_details':
-                self.book_code = self.book_code_text_box.get("1.0", "end-1c")
-                self.book_title_text_box.delete("1.0","end")
-                self.book_author_text_box.delete("1.0","end")
-                self.book_descr_text_box.delete("1.0","end")
-                self.book_title_text_box.insert(tk.END,self.row['book_title'])
-                self.book_author_text_box.insert(tk.END,self.row['book_author'])
-                self.book_descr_text_box.insert(tk.END,self.row['book_description'])
 
 
-        else:
-            if self.table_name=='student_details':
-                messagebox.showinfo('information', 'Student not found')
-            elif self.table_name=='books_details':
-                messagebox.showinfo('information', 'Book not found')
 
-    
-    def update_student_details_in_database(self):
-        self.student_name = self.student_name_text_box.get("1.0", "end-1c")
-        self.student_email = self.student_email_text_box.get("1.0", "end-1c")
-        self.student_phone = self.student_phone_text_box.get("1.0", "end-1c")
-        self.load_to_db.update_student_details_in_database(self.student_id,self.student_name,self.student_email,self.student_phone)
-        if self.load_to_db.flag:
-            self.status_message_label.config(text='Student details Updated Successfully',fg='green')
-        else:
-            messagebox.showinfo('information', 'failed to update student data')
 
-    def update_book_details_in_database(self):
-        self.book_title = self.book_title_text_box.get("1.0", "end-1c")
-        self.book_author = self.book_author_text_box.get("1.0", "end-1c")
-        self.book_description = self.book_descr_text_box.get("1.0", "end-1c")
-        self.load_to_db.update_book_details_in_database(self.book_code,self.book_title,self.book_author,self.book_description)
-        if self.load_to_db.flag:
-            self.status_message_label.config(text='book details Updated Successfully',fg='green')
-        else:
-            messagebox.showinfo('information', 'failed to update books details')
-
-    def delete_student_from_database(self):
-        self.load_to_db.delete_student_record_in_database(self.student_id)
-        if self.load_to_db.flag:
-            self.status_message_label.config(text='Student record deleted StudentID:'+str(self.student_id),fg='green')
-        else:
-            messagebox.showinfo('information', 'failed to delete student record')
-
-    def delete_book_from_database(self):
-        self.load_to_db.delete_book_from_database(self.book_code)
-        if self.load_to_db.flag:
-            self.status_message_label.config(text='Book is deleted Book Code:'+str(self.book_code),fg='green')
-        else:
-            messagebox.showinfo('information', 'failed to delete book')
-        
 
     def allot_book_to_student(self):
         print('---------------------------')

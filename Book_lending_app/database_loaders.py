@@ -2,7 +2,7 @@
 import psycopg2
 import pandas as pd
 import psycopg2.extras as extras
-
+import datetime
 
 
 class Load_to_Database():
@@ -109,12 +109,92 @@ class Load_to_Database():
 
 
     def load_book_lending_details(self,data):
-        tuples = [tuple(x) for x in data.to_numpy()]
-        cols = ','.join(list(data.columns))
-        query = "INSERT INTO %s(%s) VALUES %%s" % ('public.book_lending_details', cols)
-        extras.execute_values(self.cursor , query, tuples)
-        self.conn.commit()
+        self.flag=False
+        try:
+            tuples = [tuple(x) for x in data.to_numpy()]
+            cols = ','.join(list(data.columns))
+            query = "INSERT INTO %s(%s) VALUES %%s" % ('public.book_lending_details', cols)
+            extras.execute_values(self.cursor , query, tuples)
+            self.conn.commit()
+            self.flag=True
+        except (Exception, psycopg2.Error) as error:
+                self.flag=False
+                print("Error while deleting data:", error)
+
         pass
+
+    def remove_book_lending_record(self,student_id,book_name):
+        self.flag=False
+        try:
+            query = """DELETE FROM book_lending_details where student_id=%s and book_title=%s"""
+            self.cursor.execute(query, (student_id,book_name))
+            self.conn.commit()
+            print("record is removed")
+            self.flag=True
+        except (Exception, psycopg2.Error) as error:
+                self.flag=False
+                print("Error while inserting data:", error)
+
+    def books_to_be_return(self,data):
+        self.flag=False
+        try:
+            tuples = [tuple(x) for x in data.to_numpy()]
+            cols = ','.join(list(data.columns))
+            query = "INSERT INTO %s(%s) VALUES %%s" % ('public.books_details', cols)
+            extras.execute_values(self.cursor , query, tuples)
+            self.conn.commit()
+            self.flag=True
+        except (Exception, psycopg2.Error) as error:
+                self.flag=False
+                print("Error while inserting data:", error)
+
+        pass
+
+
+    def get_book_details_count(self):
+        query = "SELECT COUNT(*) FROM public.books_details"
+        try:
+            self.cursor.execute(query)
+            count = self.cursor.fetchone()[0]       
+            return count
+        except (Exception, psycopg2.Error) as error:
+            print("Error while fetching data:", error)
+
+    def get_student_details_count(self):
+        query = "SELECT COUNT(*) FROM public.student_details"
+        try:
+            self.cursor.execute(query)
+            count1 = self.cursor.fetchone()[0]
+            
+            return count1
+        except (Exception, psycopg2.Error) as error:
+            print("Error while fetching data:", error)
+            return 0
+        
+    def book_lend_details_count(self):
+        query = "SELECT COUNT(*) FROM public.book_lending_details"
+        try:
+            self.cursor.execute(query)
+            count2 = self.cursor.fetchone()[0]
+            
+            return count2
+        except (Exception, psycopg2.Error) as error:
+            print("Error while fetching data:", error)
+            return 0
+           
+    def get_return_dates_count(self):
+        today = datetime.date.today()
+        query = f"SELECT COUNT(*) FROM public.book_lending_details WHERE return_date = '{today}'"
+        try:
+             # Create a new cursor
+            self.cursor.execute(query)
+            count3 = self.cursor.fetchone()[0]
+            print("Number of return dates matching today's date:", count3)
+              # Close the cursor
+            return count3
+        except (Exception, psycopg2.Error) as error:
+            print("Error while fetching data:", error)
+            return 0
 
 
 # db = Load_to_Database()
