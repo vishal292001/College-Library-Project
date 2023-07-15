@@ -1,0 +1,23 @@
+version: '3.1'
+
+services:
+
+  db:
+    image: postgres:latest
+    container_name: book_lending_db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "1234"
+      POSTGRES_DB: Library
+
+  app:
+      build: .
+      container_name: book_lending_app
+      environment:
+        - DISPLAY=${DISPLAY}
+      volumes:
+        - /tmp/.X11-unix:/tmp/.X11-unix
+
+
