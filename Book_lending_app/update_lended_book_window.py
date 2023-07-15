@@ -356,5 +356,5 @@ class update_lended_book_window():
     def check_and_destroy_frame(self,root):
         for child in root.winfo_children():
             if isinstance(child, tk.Frame):
-                if child.winfo_name() in ['add_student_frame','update_student_frame','delete_student_frame','add_book_frame','update_book_frame','delete_book_frame','lend_book_frame','update_student_book_frame']:
+                if child.winfo_name() in ['add_student_frame','update_student_frame','delete_student_frame','add_book_frame','update_book_frame','delete_book_frame','lend_book_frame','update_student_book_frame','delete_lended_book_frame']:
                     child.destroy()

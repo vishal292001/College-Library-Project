@@ -189,7 +189,7 @@ class Load_to_Database():
              # Create a new cursor
             self.cursor.execute(query)
             count3 = self.cursor.fetchone()[0]
-            print("Number of return dates matching today's date:", count3)
+            # print("Number of return dates matching today's date:", count3)
               # Close the cursor
             return count3
         except (Exception, psycopg2.Error) as error:

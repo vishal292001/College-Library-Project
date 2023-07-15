@@ -73,11 +73,11 @@ class add_new_book_window():
         else:
             self.load_to_db.load_book_to_database(tuple(self.book_details_list))
             if self.load_to_db.flag:
-                self.status_message_label.config(text='Book is Added to Database Successfully Book Code:'+str(self.book_details_list[0]),font=("Arial Bold", 10))
+                self.status_message_label.config(text='Book is Added to Database Successfully Book Code:'+str(self.book_details_list[0]),font=("Arial Bold", 9))
 
 
     def check_and_destroy_frame(self,root):
         for child in root.winfo_children():
             if isinstance(child, tk.Frame):
-                if child.winfo_name() in ['add_student_frame','update_student_frame','delete_student_frame','add_book_frame','update_book_frame','delete_book_frame','lend_book_frame','update_student_book_frame']:
+                if child.winfo_name() in ['add_student_frame','update_student_frame','delete_student_frame','add_book_frame','update_book_frame','delete_book_frame','lend_book_frame','update_student_book_frame','delete_lended_book_frame']:
                     child.destroy()

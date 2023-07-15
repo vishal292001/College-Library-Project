@@ -25,7 +25,7 @@ import update_book_details_window
 import delete_book_window
 import book_lending_window
 import update_lended_book_window
-
+import delete_lended_book_window
 
 
 
@@ -39,7 +39,7 @@ class Book_lending_app():
         self.add_baground_images()
 
        
-        self.status_message_label = tk.Label(self.root, bd=0,text="",font=("Arial Bold", 14),fg="green",bg='white')
+        self.status_message_label = tk.Label(self.root, bd=0,text="",font=("Arial Bold", 9),fg="green",bg='white')
         self.status_message_label.place(x=382,y=75)
         self.load_to_db = database_loaders.Load_to_Database()
         self.add_new_student=add_new_student_window.add_new_student_in_database(self.root,self.load_to_db,self.status_message_label)
@@ -50,6 +50,8 @@ class Book_lending_app():
         self.delete_book = delete_book_window.delete_book_window(self.root,self.load_to_db,self.status_message_label)
         self.lend_book = book_lending_window.book_lending_window(self.root,self.load_to_db,self.status_message_label)
         self.update_lended_book = update_lended_book_window.update_lended_book_window(self.root,self.load_to_db,self.status_message_label)
+        self.delete_lended_book = delete_lended_book_window.delete_lended_book_window(self.root,self.load_to_db,self.status_message_label)
+
 
         self.add_buttons()
         self.add_user_inputs()
@@ -63,19 +65,19 @@ class Book_lending_app():
         self.book_lending_table_name = 'book_lending_details'
         
         self.total_book = tk.Label(text="", font=("Arial Bold", 11), fg="green", bg="white")
-        self.total_book.place(x=884, y=170)
+        self.total_book.place(x=900, y=178)
   
         self.total_student = tk.Label(text="", font=("Arial Bold", 11), fg="green", bg="white")
-        self.total_student.place(x=1004, y=170)
+        self.total_student.place(x=1024, y=178)
 
         self.total_lended_books = tk.Label(text="", font=("Arial Bold", 11), fg="green", bg="white")
-        self.total_lended_books.place(x=884, y=265)
+        self.total_lended_books.place(x=900, y=273)
 
         
         self.total_books_to_return = tk.Label(text="", font=("Arial Bold", 11), fg="green", bg="white")
-        self.total_books_to_return.place(x=1004, y=265)
+        self.total_books_to_return.place(x=1024, y=273)
 
-        # self.update_analytics_count()
+
 
 
     
@@ -99,7 +101,11 @@ class Book_lending_app():
     def add_baground_images(self):
         self.app_icon_img = tk.PhotoImage(file='./images/app_icon.png')
         self.app_icon_img_label = tk.Label(self.root, bd=0,image=self.app_icon_img)
-        self.app_icon_img_label.place(x=0,y=-1)
+        self.app_icon_img_label.place(x=0,y=-10)
+
+        self.app_icon_img_plus = tk.PhotoImage(file='./images/app_icon_1.png')
+        self.app_icon_img_label_plus = tk.Label(self.root, bd=0,image=self.app_icon_img_plus)
+        self.app_icon_img_label_plus.place(x=600,y=-10)
 
         self.status_image = tk.PhotoImage(file='./images/status_bg_image.png')
         self.status_image_label = tk.Label(self.root, bd=0,image=self.status_image)
@@ -137,9 +143,14 @@ class Book_lending_app():
         self.load_to_databse_details_bg_label = tk.Label(self.root, bd=0,image=self.load_to_databse_details_bg_img)
         self.load_to_databse_details_bg_label.place(x=820,y=400)
 
+
+        self.analytics_bg_img = tk.PhotoImage(file='./images/analytics_bg_img.png')
+        self.analytics_bg_img_label = tk.Label(self.root, bd=0,image=self.analytics_bg_img)
+        self.analytics_bg_img_label.place(x=825,y=50)
+
         self.analytics_window_img = tk.PhotoImage(file='./images/analytics_window.png')
         self.analytics_window_img_label = tk.Label(self.root, bd=0,image=self.analytics_window_img)
-        self.analytics_window_img_label.place(x=840,y=65)
+        self.analytics_window_img_label.place(x=850,y=74)
 
         pass
 
@@ -175,19 +186,19 @@ class Book_lending_app():
         self.delete_book_button.place(x=32,y=370)
 
 
-        self.lend_book_button_image = Image.open("./images/lend_book_img_green.png")
+        self.lend_book_button_image = Image.open("./images/lend_book_img_green_1.png")
         self.lend_book_button_image = ImageTk.PhotoImage(self.lend_book_button_image)
         self.lend_book_button = Button(self.root,image=self.lend_book_button_image,borderwidth=0,background='white',command=self.lend_book.lend_book_from_library)
         self.lend_book_button.place(x=32,y=470)
 
-        self.update_student_book_button_image = Image.open("./images/update_student_book_img_green.png")
+        self.update_student_book_button_image = Image.open("./images/update_student_book_img_green_1.png")
         self.update_student_book_button_image = ImageTk.PhotoImage(self.update_student_book_button_image)
         self.update_student_book_button = Button(self.root,image=self.update_student_book_button_image,borderwidth=0,background='white',command=self.update_lended_book.update_lended_book)
         self.update_student_book_button.place(x=32,y=520)
 
-        self.delete_student_book_button_image = Image.open("./images/delete_student_book_img_green.png")
+        self.delete_student_book_button_image = Image.open("./images/delete_student_book_img_green_1.png")
         self.delete_student_book_button_image = ImageTk.PhotoImage(self.delete_student_book_button_image)
-        self.delete_student_book_button = Button(self.root,image=self.delete_student_book_button_image,borderwidth=0,background='white')
+        self.delete_student_book_button = Button(self.root,image=self.delete_student_book_button_image,borderwidth=0,background='white',command=self.delete_lended_book.delete_lended_book)
         self.delete_student_book_button.place(x=32,y=570)
 
         self.authenticate_button_image = Image.open("./images/authenticate_user.png")
@@ -228,6 +239,7 @@ class Book_lending_app():
 
         if self.load_to_db.flag:
             self.status_message_label.config(text="Authentication Successful",fg='green')
+            self.update_analytics_count()
         else:
             self.status_message_label.config(text="Authentication Failed",fg='red')
 
@@ -541,10 +553,10 @@ class Book_lending_app():
 
 
     def check_and_destroy_frame(self,root):
-        self.status_message_label.config(text='',font=("Arial Bold", 10))
+        self.status_message_label.config(text='',font=("Arial Bold", 9))
         for child in root.winfo_children():
             if isinstance(child, tk.Frame):
-                if child.winfo_name() in ['add_student_frame','update_student_frame','delete_student_frame','add_book_frame','update_book_frame','delete_book_frame','lend_book_frame','update_student_book_frame']:
+                if child.winfo_name() in ['add_student_frame','update_student_frame','delete_student_frame','add_book_frame','update_book_frame','delete_book_frame','lend_book_frame','update_student_book_frame','delete_lended_book_frame']:
                     child.destroy()
 
 

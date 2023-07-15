@@ -75,11 +75,11 @@ class add_new_student_in_database():
         else:
             self.load_to_db.load_student_to_database(tuple(self.student_details_list))
             if self.load_to_db.flag:
-                self.status_message_label.config(text='Student is Added to Database Successfully StudentID:'+str(self.student_details_list[0]),font=("Arial Bold", 10))
+                self.status_message_label.config(text='Student is Added to Database Successfully StudentID:'+str(self.student_details_list[0]),font=("Arial Bold", 9))
 
 
     def check_and_destroy_frame(self,root):
         for child in root.winfo_children():
             if isinstance(child, tk.Frame):
-                if child.winfo_name() in ['add_student_frame','update_student_frame','delete_student_frame','add_book_frame','update_book_frame','delete_book_frame','lend_book_frame','update_student_book_frame']:
+                if child.winfo_name() in ['add_student_frame','update_student_frame','delete_student_frame','add_book_frame','update_book_frame','delete_book_frame','lend_book_frame','update_student_book_frame','delete_lended_book_frame']:
                     child.destroy()
