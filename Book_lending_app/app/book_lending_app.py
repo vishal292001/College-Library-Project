@@ -235,7 +235,7 @@ class Book_lending_app():
         if self.database_tool_name=="POSTGRES":
             self.postgres_username = self.text_box_postgres_username.get(1.0, "end-1c")
             self.postgres_password = self.text_box_postgres_password.get()
-            self.load_to_db.connect_to_postgres('localhost','Library',self.postgres_username,self.postgres_password)
+            self.load_to_db.connect_to_postgres('book_lending_db','Library',self.postgres_username,self.postgres_password)
 
         if self.load_to_db.flag:
             self.status_message_label.config(text="Authentication Successful",fg='green')

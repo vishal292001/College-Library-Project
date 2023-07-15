@@ -6,12 +6,10 @@ from PIL import ImageTk
 from tkinter import messagebox
 
 
-from sqlalchemy import create_engine,text
 import urllib
 import pandas as pd
-import sqlalchemy
 import json
-import pyodbc
+import create_schema
 import database_loaders
 
 
@@ -25,7 +23,7 @@ class Book_Details():
         self.root.configure(bg='white')
 
     # Loaded the background image
-        self.image = Image.open("./images/bg_img.PNG")
+        self.image = Image.open("./app/images/bg_img.png")
         self.image = self.image.resize((1050, 650), Image.ANTIALIAS)  
         self.background_image = ImageTk.PhotoImage(self.image)
 
@@ -41,27 +39,27 @@ class Book_Details():
 
     # Function for all the buttons(Add/Update/Delete)
     def add_buttons(self):
-        self.add_book_button_image = Image.open("./images/add_book_btn_img.png")
+        self.add_book_button_image = Image.open("./app/images/add_book_btn_img.png")
         self.add_book_button_image = self.add_book_button_image.resize((140, 60))
         self.add_book_button_image = ImageTk.PhotoImage(self.add_book_button_image)
         self.add_book_button = ttk.Button(self.root, text="add book",image=self.add_book_button_image,command=self.add_book_details_window)
         self.add_book_button.place(x=100,y=50)
 
-        self.update_book_button_image = Image.open("./images/update_book_btn_image.png")
+        self.update_book_button_image = Image.open("./app/images/update_book_btn_image.png")
         self.update_book_button_image = self.update_book_button_image.resize((140, 60))
         self.update_book_button_image = ImageTk.PhotoImage(self.update_book_button_image)
         self.update_book_button = ttk.Button(self.root, text="update book",image=self.update_book_button_image,command=self.update_book_details_window)
         self.update_book_button.place(x=260,y=50)
 
 
-        self.delete_book_button_image = Image.open("./images/delete_book_btn_img.png")
+        self.delete_book_button_image = Image.open("./app/images/delete_book_btn_img.png")
         self.delete_book_button_image = self.delete_book_button_image.resize((140, 60))
         self.delete_book_button_image = ImageTk.PhotoImage(self.delete_book_button_image)
         self.delete_book_button = ttk.Button(self.root, text="delete book",image=self.delete_book_button_image,command=self.delete_book_window)
         self.delete_book_button.place(x=420,y=50)
 
         
-        self.authenticate_button_image = Image.open("./images/Authenticate_user_img.png")
+        self.authenticate_button_image = Image.open("./app/images/Authenticate_user_img.png")
         self.authenticate_button_image = self.authenticate_button_image.resize((140, 60))
         self.authenticate_button_image = ImageTk.PhotoImage(self.authenticate_button_image)
         self.authenticate_button = ttk.Button(self.root, text="Authenticate",image=self.authenticate_button_image,command=self.database_details)
@@ -76,11 +74,11 @@ class Book_Details():
         self.book_details_frame = Frame(self.root,bg="white",borderwidth=6,width=600,height=400,name='add_book_frame')
         self.book_details_frame.place(x=40,y=140)
 
-        self.book_details_bg_image = tk.PhotoImage(file='./images/book_details_bg_img copy.png')
+        self.book_details_bg_image = tk.PhotoImage(file='./app/images/book_details_bg_img copy.png')
         self.book_details_bg_image_label = tk.Label(self.book_details_frame, bd=0,image=self.book_details_bg_image)
         self.book_details_bg_image_label.place(x=0,y=0)
 
-        self.book_details_image = tk.PhotoImage(file='./images/book_details_image.png')
+        self.book_details_image = tk.PhotoImage(file='./app/images/book_details_image.png')
         self.book_details_image_label = tk.Label(self.book_details_frame, bd=0,image=self.book_details_image)
         self.book_details_image_label.place(x=60,y=40)
 
@@ -116,12 +114,12 @@ class Book_Details():
         self.update_book_details_frame = Frame(self.root,bg="white",borderwidth=6,width=600,height=400)
         self.update_book_details_frame.place(x=40,y=140)
 
-        self.update_book_details_bg_image = tk.PhotoImage(file='./images/book_details_bg_img copy.png')
+        self.update_book_details_bg_image = tk.PhotoImage(file='./app/images/book_details_bg_img copy.png')
         self.update_book_details_bg_image_label = tk.Label(self.update_book_details_frame, bd=0,image=self.update_book_details_bg_image)
         self.update_book_details_bg_image_label.place(x=0,y=0)
 
 
-        self.enter_book_id_img = tk.PhotoImage(file='./images/enter_bookid_img.png')
+        self.enter_book_id_img = tk.PhotoImage(file='./app/images/enter_bookid_img.png')
         self.enter_book_id_img_label = tk.Label(self.update_book_details_frame, bd=0,image=self.enter_book_id_img)
         self.enter_book_id_img_label.place(x=35,y=40)
 
@@ -129,7 +127,7 @@ class Book_Details():
         self.enter_book_id_text_box.place(x=205,y=65)
 
 
-        self.search_book_img = Image.open("./images/search_img.png")
+        self.search_book_img = Image.open("./app/images/search_img.png")
         self.search_book_img = self.search_book_img.resize((70, 40))
         self.search_book_img = ImageTk.PhotoImage(self.search_book_img)
         self.search_book_button = ttk.Button(self.update_book_details_frame,text="search book",image=self.search_book_img,command=lambda:self.search_book_in_database('update'))
@@ -145,18 +143,18 @@ class Book_Details():
         self.delete_book_frame = Frame(self.root,bg="white",borderwidth=6,width=600,height=400)
         self.delete_book_frame.place(x=40,y=140)
 
-        self.delete_book_bg_image = tk.PhotoImage(file='./images/book_details_bg_img copy.png')
+        self.delete_book_bg_image = tk.PhotoImage(file='./app/images/book_details_bg_img copy.png')
         self.delete_book_bg_image_label = tk.Label(self.delete_book_frame, bd=0,image=self.delete_book_bg_image)
         self.delete_book_bg_image_label.place(x=0,y=0)
 
-        self.enter_book_id_img = tk.PhotoImage(file='./images/enter_bookid_img.png')
+        self.enter_book_id_img = tk.PhotoImage(file='./app/images/enter_bookid_img.png')
         self.enter_book_id_img_label = tk.Label(self.delete_book_frame, bd=0,image=self.enter_book_id_img)
         self.enter_book_id_img_label.place(x=35,y=40)
 
         self.enter_book_id_text_box = tk.Text(self.delete_book_frame,height = 1,width = 25, highlightthickness=1,highlightbackground="black")
         self.enter_book_id_text_box.place(x=205,y=65)
 
-        self.search_book_img_in_delete_win = Image.open("./images/search_img.png")
+        self.search_book_img_in_delete_win = Image.open("./app/images/search_img.png")
         self.search_book_img_in_delete_win = self.search_book_img_in_delete_win.resize((70, 40))
         self.search_book_img_in_delete_win = ImageTk.PhotoImage(self.search_book_img_in_delete_win)
         self.search_book_button_in_delete_win = ttk.Button(self.delete_book_frame,text="search student",image=self.search_book_img_in_delete_win,command=lambda:self.search_book_in_database('delete'))
@@ -191,7 +189,7 @@ class Book_Details():
 #function  to add database details
     def database_details(self):
 
-        self.load_to_databse_details_bg_img = tk.PhotoImage(file='./images/load_database_details_bg_img.png')
+        self.load_to_databse_details_bg_img = tk.PhotoImage(file='./app/images/load_database_details_bg_img.png')
         self.load_to_databse_details_bg_label = tk.Label(self.root, bd=0,image=self.load_to_databse_details_bg_img)
         self.load_to_databse_details_bg_label.place(x=640,y=150)
 
@@ -265,11 +263,11 @@ class Book_Details():
 
         print(self.load_to_db.flag)
         if self.load_to_db.flag:
-            self.authentication_success_image = tk.PhotoImage(file='./images/Auth_success.png')
+            self.authentication_success_image = tk.PhotoImage(file='./app/images/Auth_success.png')
             self.authentication_success_image_label = tk.Label(self.root, bd=0,image=self.authentication_success_image)
             self.authentication_success_image_label.place(x=660,y=460)
         else:
-            self.authentication_failed_image = tk.PhotoImage(file='./images/Auth_failed.png')
+            self.authentication_failed_image = tk.PhotoImage(file='./app/images/Auth_failed.png')
             self.authentication_failed_image_label = tk.Label(self.root, bd=0,image=self.authentication_failed_image)
             self.authentication_failed_image_label.place(x=660,y=460)
 
@@ -288,7 +286,7 @@ class Book_Details():
             self.frame = self.update_book_details_frame
         if operation=='delete':
             self.frame=self.delete_book_frame
-        self.book_details_image_opration = tk.PhotoImage(file='./images/book_details_image.png')
+        self.book_details_image_opration = tk.PhotoImage(file='./app/images/book_details_image.png')
         self.book_details_image_opration_label = tk.Label(self.frame, bd=0,image=self.book_details_image_opration)
         self.book_details_image_opration_label.place(x=40,y=95)
 
