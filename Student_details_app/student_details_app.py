@@ -9,7 +9,7 @@ from tkinter import messagebox
 import urllib
 import pandas as pd
 import json
-import pyodbc
+import create_schema
 import database_loaders
 
 
@@ -36,28 +36,28 @@ class Student_Details():
     def add_buttons(self):
      
         #buttons to open window for add/registor new students
-        self.add_student_button_image = Image.open("./images/add_student_button_img.png")
+        self.add_student_button_image = Image.open("./app/images/add_student_button_img.png")
         self.add_student_button_image = self.add_student_button_image.resize((140, 60))
         self.add_student_button_image = ImageTk.PhotoImage(self.add_student_button_image)
         self.add_student_button = ttk.Button(self.root, text="add student",image=self.add_student_button_image,command=self.add_new_student_frame)
         self.add_student_button.place(x=100,y=50)
 
         #button to open window for update existing student
-        self.update_student_button_image = Image.open("./images/update_student_button_img.png")
+        self.update_student_button_image = Image.open("./app/images/update_student_button_img.png")
         self.update_student_button_image = self.update_student_button_image.resize((140, 60))
         self.update_student_button_image = ImageTk.PhotoImage(self.update_student_button_image)
         self.update_student_button = ttk.Button(self.root, text="update student",image=self.update_student_button_image,command=self.update_student_details_window)
         self.update_student_button.place(x=260,y=50)
 
         #button to ope window to delete existing student from database
-        self.delete_student_button_image = Image.open("./images/delete_student_button_img.png")
+        self.delete_student_button_image = Image.open("./app/images/delete_student_button_img.png")
         self.delete_student_button_image = self.delete_student_button_image.resize((140, 60))
         self.delete_student_button_image = ImageTk.PhotoImage(self.delete_student_button_image)
         self.delete_student_button = ttk.Button(self.root, text="delete student",image=self.delete_student_button_image,command=self.delete_student_window)
         self.delete_student_button.place(x=420,y=50)
 
         #button to open window for user authentication
-        self.authenticate_button_image = Image.open("./images/Authenticate_user_img.png")
+        self.authenticate_button_image = Image.open("./app/images/Authenticate_user_img.png")
         self.authenticate_button_image = self.authenticate_button_image.resize((140, 60))
         self.authenticate_button_image = ImageTk.PhotoImage(self.authenticate_button_image)
         self.authenticate_button = ttk.Button(self.root, text="Aithenticate",image=self.authenticate_button_image,command=self.database_details)
@@ -78,11 +78,11 @@ class Student_Details():
         self.student_details_frame = Frame(self.root,bg="white",borderwidth=6,width=600,height=400,name='add_student_frame')
         self.student_details_frame.place(x=40,y=140)
 
-        self.student_details_bg_image = tk.PhotoImage(file='./images/student_details_bg_img.png')
+        self.student_details_bg_image = tk.PhotoImage(file='./app/images/student_details_bg_img.png')
         self.student_details_bg_image_label = tk.Label(self.student_details_frame, bd=0,image=self.student_details_bg_image)
         self.student_details_bg_image_label.place(x=0,y=0)
 
-        self.student_details_image = tk.PhotoImage(file='./images/student_details_img.png')
+        self.student_details_image = tk.PhotoImage(file='./app/images/student_details_img.png')
         self.student_details_image_label = tk.Label(self.student_details_frame, bd=0,image=self.student_details_image)
         self.student_details_image_label.place(x=60,y=50)
 
@@ -129,12 +129,12 @@ class Student_Details():
         self.update_student_details_frame = Frame(self.root,bg="white",borderwidth=6,width=600,height=400)
         self.update_student_details_frame.place(x=40,y=140)
 
-        self.update_student_details_bg_image = tk.PhotoImage(file='./images/student_details_bg_img.png')
+        self.update_student_details_bg_image = tk.PhotoImage(file='./app/images/student_details_bg_img.png')
         self.update_student_details_bg_image_label = tk.Label(self.update_student_details_frame, bd=0,image=self.update_student_details_bg_image)
         self.update_student_details_bg_image_label.place(x=0,y=0)
 
 
-        self.enter_student_id_img = tk.PhotoImage(file='./images/enter_student_id_img.png')
+        self.enter_student_id_img = tk.PhotoImage(file='./app/images/enter_student_id_img.png')
         self.enter_student_id_img_label = tk.Label(self.update_student_details_frame, bd=0,image=self.enter_student_id_img)
         self.enter_student_id_img_label.place(x=40,y=65)
 
@@ -142,7 +142,7 @@ class Student_Details():
         self.enter_studen_id_text_box.place(x=210,y=75)
 
 
-        self.search_student_img = Image.open("./images/search_img.png")
+        self.search_student_img = Image.open("./app/images/search_img.png")
         self.search_student_img = self.search_student_img.resize((70, 40))
         self.search_student_img = ImageTk.PhotoImage(self.search_student_img)
         self.search_student_button = ttk.Button(self.update_student_details_frame,text="search student",image=self.search_student_img,command=lambda:self.search_student_in_database('update'))
@@ -161,12 +161,12 @@ class Student_Details():
         self.delete_student_frame = Frame(self.root,bg="white",borderwidth=6,width=600,height=400)
         self.delete_student_frame.place(x=40,y=140)
 
-        self.delete_student_bg_image = tk.PhotoImage(file='./images/student_details_bg_img.png')
+        self.delete_student_bg_image = tk.PhotoImage(file='./app/images/student_details_bg_img.png')
         self.delete_student_bg_image_label = tk.Label(self.delete_student_frame, bd=0,image=self.delete_student_bg_image)
         self.delete_student_bg_image_label.place(x=0,y=0)
 
 
-        self.enter_student_id_img = tk.PhotoImage(file='./images/enter_student_id_img.png')
+        self.enter_student_id_img = tk.PhotoImage(file='./app/images/enter_student_id_img.png')
         self.enter_student_id_img_label = tk.Label(self.delete_student_frame, bd=0,image=self.enter_student_id_img)
         self.enter_student_id_img_label.place(x=40,y=65)
 
@@ -174,7 +174,7 @@ class Student_Details():
         self.enter_studen_id_text_box.place(x=210,y=75)
 
 
-        self.search_student_img_in_delete_win = Image.open("./images/search_img.png")
+        self.search_student_img_in_delete_win = Image.open("./app/images/search_img.png")
         self.search_student_img_in_delete_win = self.search_student_img_in_delete_win.resize((70, 40))
         self.search_student_img_in_delete_win = ImageTk.PhotoImage(self.search_student_img_in_delete_win)
         self.search_student_button_in_delete_win = ttk.Button(self.delete_student_frame,text="search student",image=self.search_student_img_in_delete_win,command=lambda:self.search_student_in_database('delete'))
@@ -223,7 +223,7 @@ class Student_Details():
 
     def database_details(self):
 
-        self.load_to_databse_details_bg_img = tk.PhotoImage(file='./images/load_database_details_bg_img.png')
+        self.load_to_databse_details_bg_img = tk.PhotoImage(file='./app/images/load_database_details_bg_img.png')
         self.load_to_databse_details_bg_label = tk.Label(self.root, bd=0,image=self.load_to_databse_details_bg_img)
         self.load_to_databse_details_bg_label.place(x=640,y=150)
 
@@ -300,16 +300,16 @@ class Student_Details():
         if self.database_tool_name=="POSTGRES":
             self.postgres_username = self.text_box_postgres_username.get(1.0, "end-1c")
             self.postgres_password = self.text_box_postgres_password.get()
-            self.load_to_db.connect_to_postgres('localhost','Library',self.postgres_username,self.postgres_password)
+            self.load_to_db.connect_to_postgres('database','Library',self.postgres_username,self.postgres_password)
 
 
         print(self.load_to_db.flag)
         if self.load_to_db.flag:
-            self.authentication_success_image = tk.PhotoImage(file='./images/Auth_success.png')
+            self.authentication_success_image = tk.PhotoImage(file='./app/images/Auth_success.png')
             self.authentication_success_image_label = tk.Label(self.root, bd=0,image=self.authentication_success_image)
             self.authentication_success_image_label.place(x=660,y=440)
         else:
-            self.authentication_failed_image = tk.PhotoImage(file='./images/Auth_failed.png')
+            self.authentication_failed_image = tk.PhotoImage(file='./app/images/Auth_failed.png')
             self.authentication_failed_image_label = tk.Label(self.root, bd=0,image=self.authentication_failed_image)
             self.authentication_failed_image_label.place(x=660,y=440)
 
@@ -330,7 +330,7 @@ class Student_Details():
             self.frame = self.update_student_details_frame
         if operation=='delete':
             self.frame=self.delete_student_frame
-        self.student_details_image_opration = tk.PhotoImage(file='./images/update_student_img.png')
+        self.student_details_image_opration = tk.PhotoImage(file='./app/images/update_student_img.png')
         self.student_details_image_opration_label = tk.Label(self.frame, bd=0,image=self.student_details_image_opration)
         self.student_details_image_opration_label.place(x=40,y=140)
 
