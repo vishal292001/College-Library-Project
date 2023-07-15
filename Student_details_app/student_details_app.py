@@ -17,6 +17,9 @@ import database_loaders
 
 class Student_Details():
     def __init__(self):
+        """
+          Initialize Tk and add window to the application. Called by __init__
+        """
         self.root = Tk()
         self.root.title("Student Details App")
         self.root.geometry('1050x650')
@@ -31,26 +34,29 @@ class Student_Details():
         self.root.mainloop()
 
     def add_buttons(self):
+     
+        #buttons to open window for add/registor new students
         self.add_student_button_image = Image.open("./images/add_student_button_img.png")
         self.add_student_button_image = self.add_student_button_image.resize((140, 60))
         self.add_student_button_image = ImageTk.PhotoImage(self.add_student_button_image)
         self.add_student_button = ttk.Button(self.root, text="add student",image=self.add_student_button_image,command=self.add_new_student_frame)
         self.add_student_button.place(x=100,y=50)
 
+        #button to open window for update existing student
         self.update_student_button_image = Image.open("./images/update_student_button_img.png")
         self.update_student_button_image = self.update_student_button_image.resize((140, 60))
         self.update_student_button_image = ImageTk.PhotoImage(self.update_student_button_image)
         self.update_student_button = ttk.Button(self.root, text="update student",image=self.update_student_button_image,command=self.update_student_details_window)
         self.update_student_button.place(x=260,y=50)
 
-
+        #button to ope window to delete existing student from database
         self.delete_student_button_image = Image.open("./images/delete_student_button_img.png")
         self.delete_student_button_image = self.delete_student_button_image.resize((140, 60))
         self.delete_student_button_image = ImageTk.PhotoImage(self.delete_student_button_image)
         self.delete_student_button = ttk.Button(self.root, text="delete student",image=self.delete_student_button_image,command=self.delete_student_window)
         self.delete_student_button.place(x=420,y=50)
 
-        
+        #button to open window for user authentication
         self.authenticate_button_image = Image.open("./images/Authenticate_user_img.png")
         self.authenticate_button_image = self.authenticate_button_image.resize((140, 60))
         self.authenticate_button_image = ImageTk.PhotoImage(self.authenticate_button_image)
@@ -65,6 +71,9 @@ class Student_Details():
         pass
 
     def add_new_student_frame(self):
+        """
+         Add a frame/window to be open when user clicked on add new student in  root window that allows to add new students
+        """
         self.check_and_destroy_frame(self.root)
         self.student_details_frame = Frame(self.root,bg="white",borderwidth=6,width=600,height=400,name='add_student_frame')
         self.student_details_frame.place(x=40,y=140)
@@ -77,19 +86,23 @@ class Student_Details():
         self.student_details_image_label = tk.Label(self.student_details_frame, bd=0,image=self.student_details_image)
         self.student_details_image_label.place(x=60,y=50)
 
-
+        # Creates and places the text box to enter students'IDs
         self.studen_id_text_box = tk.Text(self.student_details_frame,height = 1,width = 25, highlightthickness=1,highlightbackground="black")
         self.studen_id_text_box.place(x=260,y=65)
 
+        # Creates and places the text box to enter student name
         self.studen_name_text_box = tk.Text(self.student_details_frame,height = 1,width = 25, highlightthickness=1,highlightbackground="black")
         self.studen_name_text_box.place(x=260,y=115)
 
+        # Creates and places the text box to enter student email
         self.studen_email_text_box = tk.Text(self.student_details_frame,height = 1,width = 25, highlightthickness=1,highlightbackground="black")
         self.studen_email_text_box.place(x=260,y=165)
 
+        # Creates and places the text box to enter student phone no
         self.studen_phone_text_box = tk.Text(self.student_details_frame,height = 1,width = 25, highlightthickness=1,highlightbackground="black")
         self.studen_phone_text_box.place(x=260,y=215)
 
+        # button to call funtion that will add new student to database
         self.add_student_to_db_button = ttk.Button(self.student_details_frame, text="ADD", command=self.add_to_database)
         self.add_student_to_db_button.place(x=170,y=300)
 
@@ -98,13 +111,20 @@ class Student_Details():
 
 
     def check_and_destroy_frame(self,root):
+        """
+         Check and destroy frames that need to be destroyed. This is a hack to avoid problems with Tkinter's frame ovelapping.
+        """
         for child in root.winfo_children():
             if isinstance(child, tk.Frame):
+                # Destroy the child object if it s not in add_student_frame update_student_frame
                 if child.winfo_name() in ['add_student_frame','update_student_frame']:
                     child.destroy()
 
 
     def update_student_details_window(self):
+        """
+         Creates and place out the window to update Student Details. It is used for updating exixting student details
+        """
         self.check_and_destroy_frame(self.root)
         self.update_student_details_frame = Frame(self.root,bg="white",borderwidth=6,width=600,height=400)
         self.update_student_details_frame.place(x=40,y=140)
@@ -134,6 +154,9 @@ class Student_Details():
         pass
 
     def delete_student_window(self):
+        """
+         Creates and place out the window to delete exixting student. It is used for delete student record from database
+        """
         self.check_and_destroy_frame(self.root)
         self.delete_student_frame = Frame(self.root,bg="white",borderwidth=6,width=600,height=400)
         self.delete_student_frame.place(x=40,y=140)
@@ -159,8 +182,9 @@ class Student_Details():
 
 
 
-
+    #funtion to add new student in database
     def add_to_database(self):
+
         self.student_details_list =[]
         self.student_details_list.append(self.studen_id_text_box.get("1.0", "end-1c"))
         self.student_details_list.append(self.studen_name_text_box.get("1.0", "end-1c"))
@@ -168,18 +192,20 @@ class Student_Details():
         self.student_details_list.append(self.studen_phone_text_box.get("1.0", "end-1c"))
         print(self.student_details_list)
 
+        # show pop-up message if any field is empty
         for i in self.student_details_list:
             if len(i)==0:
                 messagebox.showinfo('information', 'Field is Empty')
                 return 0
         
+        # show pop-up message id authentication is pending
         if self.load_to_db.flag==False:
                 messagebox.showinfo('information', 'User Authentication is Pending')
                 return 0
         
         self.df = self.load_to_db.search_in_database()
         self.student_id_list = list(self.df['student_id'])
-        self.student_id = int(self.studen_id_text_box.get("1.0", "end-1c"))
+        self.student_id = self.studen_id_text_box.get("1.0", "end-1c")
         if self.student_id in self.student_id_list:
             messagebox.showinfo('information', 'student with this id already exist in database')
             return 0
@@ -266,6 +292,9 @@ class Student_Details():
     
 
     def authenticate_user(self):
+        """
+         Authenticate user to database if they are logged in. This is called by connect_to_
+        """
         self.database_tool_name = self.select_database_dropdown.get()
         
         if self.database_tool_name=="POSTGRES":
@@ -292,7 +321,7 @@ class Student_Details():
         if self.load_to_db.flag==False:
             messagebox.showinfo('information', 'User Authentication is Pending')
             return 0
-        self.student_id = int(self.enter_studen_id_text_box.get(1.0, "end-1c"))
+        self.student_id = self.enter_studen_id_text_box.get(1.0, "end-1c")
         self.df = self.load_to_db.search_in_database()
         print(self.df)
         self.student_id_list = list(self.df['student_id'])
