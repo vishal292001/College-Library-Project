@@ -1,4 +1,3 @@
-FROM postgres
 FROM python:3.8
 
 
@@ -12,5 +11,5 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 
-CMD ["python", "./app/book_lending_app.py"]
+CMD ["python", "./app/book_app.py"]
 

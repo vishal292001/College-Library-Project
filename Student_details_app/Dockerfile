@@ -1,11 +1,11 @@
-FROM postgres
+
 FROM python:3.8
 
 
 
-WORKDIR .
+WORKDIR /app
 
-COPY . ./app
+COPY ./app ./app
 
 COPY requirements.txt .
 

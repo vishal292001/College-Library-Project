@@ -71,5 +71,7 @@ def create_table(query):
 
 
 
-for i in lst:
-    create_table(i)
+
+def start_creating_table():
+    for i in lst:
+        create_table(i)
