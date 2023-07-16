@@ -24,7 +24,7 @@ class add_new_book_window():
         self.add_new_book_frame = Frame(self.root,bg="white",borderwidth=6,width=500,height=400,name='add_book_frame',highlightbackground="black",highlightthickness=2)
         self.add_new_book_frame.place(x=260,y=140)
 
-        self.new_book_details_img = tk.PhotoImage(file='./images/book_details_img.png')
+        self.new_book_details_img = tk.PhotoImage(file='./app/images/book_details_img.png')
         self.new_book_details_img_label = tk.Label(self.add_new_book_frame, bd=0,image=self.new_book_details_img)
         self.new_book_details_img_label.place(x=20,y=40)
 

@@ -24,7 +24,7 @@ class delete_student_window():
         self.delete_student_frame.place(x=260,y=140)
 
 
-        self.enter_student_id_image = tk.PhotoImage(file='./images/enter_student_id_img.png')
+        self.enter_student_id_image = tk.PhotoImage(file='./app/images/enter_student_id_img.png')
         self.enter_student_id_image_label = tk.Label(self.delete_student_frame, bd=0,image=self.enter_student_id_image)
         self.enter_student_id_image_label.place(x=10,y=40)
 
@@ -33,13 +33,13 @@ class delete_student_window():
 
 
 
-        self.search_student_img = Image.open("./images/search_img.png")
+        self.search_student_img = Image.open("./app/images/search_img.png")
         self.search_student_img = self.search_student_img.resize((90, 50))
         self.search_student_img = ImageTk.PhotoImage(self.search_student_img)
         self.search_button = Button(self.delete_student_frame,image=self.search_student_img,borderwidth=0,background='white',command=lambda:self.search_element_in_database(self.student_id_text_box.get("1.0", "end-1c"),self.student_table_name))
         self.search_button.place(x=380,y=35)
 
-        self.delete_student_details_bg_image = tk.PhotoImage(file='./images/update_student_details_bg_img.png')
+        self.delete_student_details_bg_image = tk.PhotoImage(file='./app/images/update_student_details_bg_img.png')
         self.delete_student_details_bg_image_label = tk.Label(self.delete_student_frame, bd=0,image=self.delete_student_details_bg_image)
         self.delete_student_details_bg_image_label.place(x=5,y=120)
 

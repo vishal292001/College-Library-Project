@@ -258,7 +258,7 @@ class Book_Details():
         if self.database_tool_name=="POSTGRES":
             self.postgres_username = self.text_box_postgres_username.get(1.0, "end-1c")
             self.postgres_password = self.text_box_postgres_password.get(1.0, "end-1c")
-            self.load_to_db.connect_to_postgres('localhost','Library',self.postgres_username,self.postgres_password)
+            self.load_to_db.connect_to_postgres('book_db','Library',self.postgres_username,self.postgres_password)
 
 
         print(self.load_to_db.flag)
@@ -266,6 +266,7 @@ class Book_Details():
             self.authentication_success_image = tk.PhotoImage(file='./app/images/Auth_success.png')
             self.authentication_success_image_label = tk.Label(self.root, bd=0,image=self.authentication_success_image)
             self.authentication_success_image_label.place(x=660,y=460)
+            create_schema.create_book_table()
         else:
             self.authentication_failed_image = tk.PhotoImage(file='./app/images/Auth_failed.png')
             self.authentication_failed_image_label = tk.Label(self.root, bd=0,image=self.authentication_failed_image)

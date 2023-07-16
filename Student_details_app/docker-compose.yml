@@ -4,7 +4,7 @@ services:
 
   db:
     image: postgres:latest
-    container_name: database
+    container_name: student_db
     ports:
       - "5432:5432"
     environment:
@@ -19,5 +19,7 @@ services:
         - DISPLAY=${DISPLAY}
       volumes:
         - /tmp/.X11-unix:/tmp/.X11-unix
+      depends_on:
+        - db
 
 

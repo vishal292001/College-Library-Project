@@ -14,8 +14,8 @@ from tkcalendar import DateEntry
 import urllib
 import pandas as pd
 import json
-import pyodbc
 import duckdb
+import create_schema
 import database_loaders
 import add_new_student_window
 import update_student_details_window
@@ -99,109 +99,109 @@ class Book_lending_app():
         self.total_book.after(500,self.update_analytics_count)
 
     def add_baground_images(self):
-        self.app_icon_img = tk.PhotoImage(file='./images/app_icon.png')
+        self.app_icon_img = tk.PhotoImage(file='./app/images/app_icon.png')
         self.app_icon_img_label = tk.Label(self.root, bd=0,image=self.app_icon_img)
         self.app_icon_img_label.place(x=0,y=-10)
 
-        self.app_icon_img_plus = tk.PhotoImage(file='./images/app_icon_1.png')
+        self.app_icon_img_plus = tk.PhotoImage(file='./app/images/app_icon_1.png')
         self.app_icon_img_label_plus = tk.Label(self.root, bd=0,image=self.app_icon_img_plus)
         self.app_icon_img_label_plus.place(x=600,y=-10)
 
-        self.status_image = tk.PhotoImage(file='./images/status_bg_image.png')
+        self.status_image = tk.PhotoImage(file='./app/images/status_bg_image.png')
         self.status_image_label = tk.Label(self.root, bd=0,image=self.status_image)
         self.status_image_label.place(x=260,y=60)
 
-        self.buttons_bg_image_student = tk.PhotoImage(file='./images/button_white_bg_image.png')
+        self.buttons_bg_image_student = tk.PhotoImage(file='./app/images/button_white_bg_image.png')
         self.buttons_bg_image_student_label = tk.Label(self.root, bd=0,image=self.buttons_bg_image_student)
         self.buttons_bg_image_student_label.place(x=10,y=48)
 
-        self.buttons_bg_image_book = tk.PhotoImage(file='./images/button_white_bg_image.png')
+        self.buttons_bg_image_book = tk.PhotoImage(file='./app/images/button_white_bg_image.png')
         self.buttons_bg_image_book_label = tk.Label(self.root, bd=0,image=self.buttons_bg_image_book)
         self.buttons_bg_image_book_label.place(x=10,y=245)
 
-        self.buttons_bg_image_lend_book = tk.PhotoImage(file='./images/button_white_bg_image.png')
+        self.buttons_bg_image_lend_book = tk.PhotoImage(file='./app/images/button_white_bg_image.png')
         self.buttons_bg_image_lend_book_label = tk.Label(self.root, bd=0,image=self.buttons_bg_image_lend_book)
         self.buttons_bg_image_lend_book_label.place(x=10,y=445)
 
-        self.close_icon_img = Image.open("./images/close_icon.png")
+        self.close_icon_img = Image.open("./app/images/close_icon.png")
         self.close_icon_img = self.close_icon_img.resize((20, 20))
         self.close_icon_img = ImageTk.PhotoImage(self.close_icon_img)
  
-        self.search_icon_img = Image.open("./images/search_icon.png")
+        self.search_icon_img = Image.open("./app/images/search_icon.png")
         self.search_icon_img = self.search_icon_img.resize((40, 40))
         self.search_icon_img = ImageTk.PhotoImage(self.search_icon_img)
 
-        self.enter_student_id_image_lend_win = Image.open("./images/enter_student_id_img.png")
+        self.enter_student_id_image_lend_win = Image.open("./app/images/enter_student_id_img.png")
         self.enter_student_id_image_lend_win = self.enter_student_id_image_lend_win.resize((120, 50))
         self.enter_student_id_image_lend_win = ImageTk.PhotoImage(self.enter_student_id_image_lend_win)
  
-        self.enter_book_code_image_lend_win = Image.open("./images/enter_book_code_img.png")
+        self.enter_book_code_image_lend_win = Image.open("./app/images/enter_book_code_img.png")
         self.enter_book_code_image_lend_win = self.enter_book_code_image_lend_win.resize((120, 50))
         self.enter_book_code_image_lend_win = ImageTk.PhotoImage(self.enter_book_code_image_lend_win)
 
-        self.load_to_databse_details_bg_img = tk.PhotoImage(file='./images/load_database_details_bg_img.png')
+        self.load_to_databse_details_bg_img = tk.PhotoImage(file='./app/images/load_database_details_bg_img.png')
         self.load_to_databse_details_bg_label = tk.Label(self.root, bd=0,image=self.load_to_databse_details_bg_img)
         self.load_to_databse_details_bg_label.place(x=820,y=400)
 
 
-        self.analytics_bg_img = tk.PhotoImage(file='./images/analytics_bg_img.png')
+        self.analytics_bg_img = tk.PhotoImage(file='./app/images/analytics_bg_img.png')
         self.analytics_bg_img_label = tk.Label(self.root, bd=0,image=self.analytics_bg_img)
         self.analytics_bg_img_label.place(x=825,y=50)
 
-        self.analytics_window_img = tk.PhotoImage(file='./images/analytics_window.png')
+        self.analytics_window_img = tk.PhotoImage(file='./app/images/analytics_window.png')
         self.analytics_window_img_label = tk.Label(self.root, bd=0,image=self.analytics_window_img)
         self.analytics_window_img_label.place(x=850,y=74)
 
         pass
 
     def add_buttons(self):
-        self.add_new_student_button_image = Image.open("./images/add_new_student_img_light_blue.png")
+        self.add_new_student_button_image = Image.open("./app/images/add_new_student_img_light_blue.png")
         self.add_new_student_button_image = ImageTk.PhotoImage(self.add_new_student_button_image)
         self.add_new_student_button = Button(self.root,image=self.add_new_student_button_image,borderwidth=0,background='white',command=self.add_new_student.add_new_student_window)
         self.add_new_student_button.place(x=32,y=80)
 
-        self.update_student_details_image = Image.open("./images/update_student_img_light_blue.png")
+        self.update_student_details_image = Image.open("./app/images/update_student_img_light_blue.png")
         self.update_student_details_image = ImageTk.PhotoImage(self.update_student_details_image)
         self.update_student_details_button = Button(self.root,image=self.update_student_details_image,borderwidth=0,background='white',command=self.update_student_details.update_student_details)
         self.update_student_details_button.place(x=32,y=130)
 
-        self.delete_student_image = Image.open("./images/delete_student_img_light_blue.png")
+        self.delete_student_image = Image.open("./app/images/delete_student_img_light_blue.png")
         self.delete_student_image = ImageTk.PhotoImage(self.delete_student_image)
         self.delete_student_button = Button(self.root,image=self.delete_student_image,borderwidth=0,background='white',command=self.delete_student.delete_student_record)
         self.delete_student_button.place(x=32,y=175)
 
-        self.add_new_book_button_image = Image.open("./images/add_new_book_img.png")
+        self.add_new_book_button_image = Image.open("./app/images/add_new_book_img.png")
         self.add_new_book_button_image = ImageTk.PhotoImage(self.add_new_book_button_image)
         self.add_new_book_button = Button(self.root,image=self.add_new_book_button_image,borderwidth=0,background='white',command=self.add_new_book.add_new_book_in_database)
         self.add_new_book_button.place(x=32,y=270)
 
-        self.update_book_button_image = Image.open("./images/update_book_img.png")
+        self.update_book_button_image = Image.open("./app/images/update_book_img.png")
         self.update_book_button_image = ImageTk.PhotoImage(self.update_book_button_image)
         self.update_book_button = Button(self.root,image=self.update_book_button_image,borderwidth=0,background='white',command=self.update_book_details.update_book_details)
         self.update_book_button.place(x=32,y=320)
 
-        self.delete_book_button_image = Image.open("./images/delete_book_img.png")
+        self.delete_book_button_image = Image.open("./app/images/delete_book_img.png")
         self.delete_book_button_image = ImageTk.PhotoImage(self.delete_book_button_image)
         self.delete_book_button = Button(self.root,image=self.delete_book_button_image,borderwidth=0,background='white',command=self.delete_book.delete_book_record)
         self.delete_book_button.place(x=32,y=370)
 
 
-        self.lend_book_button_image = Image.open("./images/lend_book_img_green_1.png")
+        self.lend_book_button_image = Image.open("./app/images/lend_book_img_green_1.png")
         self.lend_book_button_image = ImageTk.PhotoImage(self.lend_book_button_image)
         self.lend_book_button = Button(self.root,image=self.lend_book_button_image,borderwidth=0,background='white',command=self.lend_book.lend_book_from_library)
         self.lend_book_button.place(x=32,y=470)
 
-        self.update_student_book_button_image = Image.open("./images/update_student_book_img_green_1.png")
+        self.update_student_book_button_image = Image.open("./app/images/update_student_book_img_green_1.png")
         self.update_student_book_button_image = ImageTk.PhotoImage(self.update_student_book_button_image)
         self.update_student_book_button = Button(self.root,image=self.update_student_book_button_image,borderwidth=0,background='white',command=self.update_lended_book.update_lended_book)
         self.update_student_book_button.place(x=32,y=520)
 
-        self.delete_student_book_button_image = Image.open("./images/delete_student_book_img_green_1.png")
+        self.delete_student_book_button_image = Image.open("./app/images/delete_student_book_img_green_1.png")
         self.delete_student_book_button_image = ImageTk.PhotoImage(self.delete_student_book_button_image)
         self.delete_student_book_button = Button(self.root,image=self.delete_student_book_button_image,borderwidth=0,background='white',command=self.delete_lended_book.delete_lended_book)
         self.delete_student_book_button.place(x=32,y=570)
 
-        self.authenticate_button_image = Image.open("./images/authenticate_user.png")
+        self.authenticate_button_image = Image.open("./app/images/authenticate_user.png")
         self.authenticate_button_image = self.authenticate_button_image.resize((200, 50))
         self.authenticate_button_image = ImageTk.PhotoImage(self.authenticate_button_image)
         self.authenticate_button = Button(self.root, text="Aithenticate",image=self.authenticate_button_image,borderwidth=0,background='white')
@@ -239,6 +239,7 @@ class Book_lending_app():
 
         if self.load_to_db.flag:
             self.status_message_label.config(text="Authentication Successful",fg='green')
+            create_schema.start_creating_table()
             self.update_analytics_count()
         else:
             self.status_message_label.config(text="Authentication Failed",fg='red')
