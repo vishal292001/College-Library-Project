@@ -26,7 +26,6 @@ class Student_Details():
         self.root.configure(bg='white')
 
         self.load_to_db = database_loaders.Load_to_Database()
-
         self.add_buttons()
 
     
@@ -300,7 +299,7 @@ class Student_Details():
         if self.database_tool_name=="POSTGRES":
             self.postgres_username = self.text_box_postgres_username.get(1.0, "end-1c")
             self.postgres_password = self.text_box_postgres_password.get()
-            self.load_to_db.connect_to_postgres('database','Library',self.postgres_username,self.postgres_password)
+            self.load_to_db.connect_to_postgres('student_db','Library',self.postgres_username,self.postgres_password)
 
 
         print(self.load_to_db.flag)
@@ -308,6 +307,8 @@ class Student_Details():
             self.authentication_success_image = tk.PhotoImage(file='./app/images/Auth_success.png')
             self.authentication_success_image_label = tk.Label(self.root, bd=0,image=self.authentication_success_image)
             self.authentication_success_image_label.place(x=660,y=440)
+            create_schema.create_student_table()
+
         else:
             self.authentication_failed_image = tk.PhotoImage(file='./app/images/Auth_failed.png')
             self.authentication_failed_image_label = tk.Label(self.root, bd=0,image=self.authentication_failed_image)

@@ -27,7 +27,7 @@ class add_new_student_in_database():
         self.student_details_frame = Frame(self.root,bg="white",borderwidth=6,width=500,height=400,name='add_student_frame',highlightbackground="black",highlightthickness=2)
         self.student_details_frame.place(x=260,y=140)
 
-        self.student_details_img = tk.PhotoImage(file='./images/student_details_img.png')
+        self.student_details_img = tk.PhotoImage(file='./app/images/student_details_img.png')
         self.student_details_img_label = tk.Label(self.student_details_frame, bd=0,image=self.student_details_img)
         self.student_details_img_label.place(x=20,y=40)
         

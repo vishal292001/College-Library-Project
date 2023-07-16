@@ -23,19 +23,19 @@ class update_lended_book_window():
         self.student_table_name='student_details'
         self.book_table_name='books_details'
    
-        self.enter_student_id_image_lend_win = Image.open("./images/enter_student_id_img.png")
+        self.enter_student_id_image_lend_win = Image.open("./app/images/enter_student_id_img.png")
         self.enter_student_id_image_lend_win = self.enter_student_id_image_lend_win.resize((120, 50))
         self.enter_student_id_image_lend_win = ImageTk.PhotoImage(self.enter_student_id_image_lend_win)
 
-        self.search_icon_img = Image.open("./images/search_icon.png")
+        self.search_icon_img = Image.open("./app/images/search_icon.png")
         self.search_icon_img = self.search_icon_img.resize((40, 40))
         self.search_icon_img = ImageTk.PhotoImage(self.search_icon_img)
     
-        self.close_icon_img = Image.open("./images/close_icon.png")
+        self.close_icon_img = Image.open("./app/images/close_icon.png")
         self.close_icon_img = self.close_icon_img.resize((20, 20))
         self.close_icon_img = ImageTk.PhotoImage(self.close_icon_img)
 
-        self.enter_book_code_image_lend_win = Image.open("./images/enter_book_code_img.png")
+        self.enter_book_code_image_lend_win = Image.open("./app/images/enter_book_code_img.png")
         self.enter_book_code_image_lend_win = self.enter_book_code_image_lend_win.resize((120, 50))
         self.enter_book_code_image_lend_win = ImageTk.PhotoImage(self.enter_book_code_image_lend_win)
 

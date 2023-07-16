@@ -1,4 +1,7 @@
 # College-Library-Project
+<<<<<<< HEAD
+software application to maintains student and books details in library
+=======
 What is LibHub?
 
 It is a Library management system or a hub for library-related activities. It  include features such as adding books, borrowing and returning books, managing student or member records, tracking book availability, viewing reports, and more.​
@@ -61,3 +64,4 @@ Git is a distributed version control system used to track changes and manage sou
 
 IDEs like  Visual Studio Code are commonly used for writing and debugging Python code in LibHub. Visual Studio code  provides features like code highlighting, auto-completion, and debugging tools to streamline the development process.
 
+>>>>>>> main

@@ -23,20 +23,20 @@ class update_book_details_window():
         self.update_book_details_frame.place(x=260,y=140)
 
 
-        self.enter_book_code_image = tk.PhotoImage(file='./images/enter_book_code_img.png')
+        self.enter_book_code_image = tk.PhotoImage(file='./app/images/enter_book_code_img.png')
         self.enter_book_code_image_label = tk.Label(self.update_book_details_frame, bd=0,image=self.enter_book_code_image)
         self.enter_book_code_image_label.place(x=10,y=40)
 
         self.book_code_text_box = tk.Text(self.update_book_details_frame,height = 1,width = 22, highlightthickness=1,highlightbackground="blue")
         self.book_code_text_box.place(x=184,y=55)
 
-        self.search_book_img = Image.open("./images/search_img.png")
+        self.search_book_img = Image.open("./app/images/search_img.png")
         self.search_book_img = self.search_book_img.resize((90, 50))
         self.search_book_img = ImageTk.PhotoImage(self.search_book_img)
         self.search_button = Button(self.update_book_details_frame,image=self.search_book_img,borderwidth=0,background='white',command=lambda:self.search_element_in_database(self.book_code_text_box.get("1.0", "end-1c"),self.book_table_name))
         self.search_button.place(x=380,y=35)
 
-        self.update_book_details_bg_image = tk.PhotoImage(file='./images/update_book_details_img.png')
+        self.update_book_details_bg_image = tk.PhotoImage(file='./app/images/update_book_details_img.png')
         self.update_book_details_bg_image_label = tk.Label(self.update_book_details_frame, bd=0,image=self.update_book_details_bg_image)
         self.update_book_details_bg_image_label.place(x=5,y=120)
 
